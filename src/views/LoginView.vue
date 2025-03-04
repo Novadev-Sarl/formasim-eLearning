@@ -6,6 +6,7 @@ import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
 import { ref } from 'vue';
 import { AxiosError } from 'axios';
+import { RouterLink } from 'vue-router';
 
 const auth = useAuthStore();
 const router = useRouter();
@@ -47,10 +48,6 @@ const login = async () => {
   } finally {
     isLoggingIn.value = false;
   }
-};
-
-const resetPassword = () => {
-  console.log('reset password');
 };
 </script>
 
@@ -99,9 +96,9 @@ const resetPassword = () => {
               <label for="remember">Se souvenir de moi</label>
             </div>
 
-            <a href="javascript:void(0)" @click="resetPassword" class="text-sm underline text-neutral-300">
+            <RouterLink to="/forgot-password" class="text-sm underline text-neutral-300">
               Mot de passe oublié ?
-            </a>
+            </RouterLink>
           </div>
 
           <span v-if="userError" class="text-red-500">{{ userError }}</span>

@@ -1,20 +1,31 @@
 <script setup lang="ts">
 import { RouterView, useRoute } from 'vue-router'
+import { computed, ref } from 'vue'
+import axios from 'axios'
 
 import TheHeader from '@/components/TheHeader.vue'
 import TheFooter from '@/components/TheFooter.vue'
 
 const route = useRoute()
+const isFullscreenRoute = computed(() => route.path === '/login')
+const header = ref<HTMLElement | null>(null)
+const headerHeight = computed(() => header.value?.clientHeight)
+
+axios.get(import.meta.env.VITE_API_URL + '/sanctum/csrf-cookie', {
+  withCredentials: true,
+  withXSRFToken: true,
+});
+
 </script>
 
 <template>
-  <header class="fixed top-0 left-0 flex flex-col w-full bg-neutral-100" v-if="route.path !== '/login'">
+  <header class="fixed top-0 left-0 flex flex-col w-full bg-neutral-100" v-if="!isFullscreenRoute" ref="header">
     <TheHeader />
   </header>
 
-  <RouterView />
+  <RouterView :style="{ marginTop: headerHeight ? (headerHeight + 20) + 'px' : '0' }" />
 
-  <footer v-if="route.path !== '/login'">
+  <footer v-if="!isFullscreenRoute">
     <TheFooter />
   </footer>
 </template>
