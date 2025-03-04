@@ -6,7 +6,7 @@ import TheFooter from '@/components/TheFooter.vue'
 </script>
 
 <template>
-  <header>
+  <header class="fixed top-0 left-0 flex flex-col w-full bg-white">
     <TheHeader />
   </header>
 
