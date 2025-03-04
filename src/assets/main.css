@@ -2,4 +2,21 @@
 
 @theme {
   --color-primary: #27ae60;
+  --default-transition-duration: 300ms;
+}
+
+@layer base {
+  input:not([type='checkbox']) {
+    @apply ring ring-neutral-200 rounded-sm py-3 px-4 my-2 placeholder:text-neutral-300;
+  }
+
+  input[type='checkbox'] {
+    @apply w-4 h-4;
+  }
+}
+
+@layer components {
+  .action {
+    @apply px-8 py-4 font-semibold rounded-sm cursor-pointer transition-all;
+  }
 }

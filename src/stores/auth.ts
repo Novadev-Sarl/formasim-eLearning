@@ -3,6 +3,7 @@ import { useLocalStorage } from '@vueuse/core'
 import { destr } from 'destr'
 import { defineStore } from 'pinia'
 import axios from 'axios'
+import { computed } from 'vue'
 
 export const useAuthStore = defineStore('auth', () => {
   const user = useLocalStorage<User | null>('user', null, {
@@ -12,7 +13,7 @@ export const useAuthStore = defineStore('auth', () => {
     },
   })
 
-  const login = async (email: string, password: string) => {
+  const login = async (email: string, password: string, remember: boolean) => {
     await axios.get(`${import.meta.env.VITE_API_URL}/sanctum/csrf-cookie`)
 
     const response = await axios.post<{ user: User }>(
@@ -20,6 +21,7 @@ export const useAuthStore = defineStore('auth', () => {
       {
         email,
         password,
+        remember,
       },
       {
         withCredentials: true,
@@ -44,5 +46,7 @@ export const useAuthStore = defineStore('auth', () => {
     )
   }
 
-  return { user, login, logout }
+  const isLoggedIn = computed(() => user.value !== null)
+
+  return { user, login, logout, isLoggedIn }
 })
