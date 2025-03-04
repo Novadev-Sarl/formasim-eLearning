@@ -55,10 +55,10 @@ const resetPassword = async () => {
   <main class="flex flex-col items-center justify-center w-screen h-screen bg-neutral-100">
 
     <div class="flex flex-col gap-4">
-      <a href="/login" class="flex items-center gap-2 text-primary">
+      <RouterLink to="/login" class="flex items-center gap-2 text-primary">
         <ArrowBackIcon class="size-4" />
         Retour au formulaire de connexion
-      </a>
+      </RouterLink>
 
       <div class="flex flex-col max-w-2xl gap-6 p-8 bg-white rounded-md ring w-fit ring-neutral-300">
         <!-- Header -->
