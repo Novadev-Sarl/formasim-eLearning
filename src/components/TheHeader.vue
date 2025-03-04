@@ -114,7 +114,7 @@ const logout = () => {
           </div>
           <Teleport to="body">
             <div v-show="profilePanelShown" ref="profilePanelRef"
-              class="absolute flex flex-col gap-2 gap-4 p-4 bg-white shadow-md rounded-xl" :style="(profileButtonRef && profilePanelRef) ?
+              class="absolute flex flex-col gap-6 p-4 bg-white shadow-md rounded-xl" :style="(profileButtonRef && profilePanelRef) ?
                 {
                   // Automatically align the profile panel to the right and bottom of the profile button
                   right: windowWidth - profileButtonRef.offsetLeft - profileButtonRef.clientWidth + 'px',
