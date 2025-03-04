@@ -72,9 +72,9 @@ const login = async () => {
         <!-- Header -->
         <div class="flex flex-row items-center justify-between">
           <Logo class="h-12" />
-          <a href="https://formasim.ch" class="text-sm underline text-neutral-300">
-            Retour au site internet de FormaSim
-          </a>
+          <RouterLink to="/" class="text-sm underline text-neutral-300">
+            Retour à la page d'accueil
+          </RouterLink>
         </div>
 
         <h2 class="mt-8 text-3xl font-bold">Connectez-vous à votre compte</h2>
