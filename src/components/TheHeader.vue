@@ -4,7 +4,30 @@ import MailIcon from '@/components/icons/MailIcon.vue'
 import FacebookF from '@/components/icons/FacebookF.vue'
 import InstagramIcon from '@/components/icons/InstagramIcon.vue'
 import LinkedInIcon from '@/components/icons/LinkedInIcon.vue'
+import OpenInNewIcon from '@/components/icons/OpenInNewIcon.vue'
+import LogoutIcon from '@/components/icons/LogoutIcon.vue'
+import LoginIcon from '@/components/icons/LoginIcon.vue'
+import FormaSimLogo from '@/assets/icons/formasim.svg'
 
+import { ref } from 'vue'
+import { useWindowSize } from '@vueuse/core'
+import { useAuthStore } from '@/stores/auth'
+
+const auth = useAuthStore()
+
+const profilePanelShown = ref(false)
+const profilePanelRef = ref<HTMLDivElement>()
+const profileButtonRef = ref<HTMLDivElement>()
+
+const { width: windowWidth } = useWindowSize()
+
+const toggleProfilePanel = () => {
+  profilePanelShown.value = !profilePanelShown.value
+}
+
+const logout = () => {
+  auth.logout()
+}
 </script>
 
 <template>
@@ -44,6 +67,91 @@ import LinkedInIcon from '@/components/icons/LinkedInIcon.vue'
             <LinkedInIcon class="transition-all size-4 text-neutral-400 hover:text-primary" />
           </a>
         </div>
+      </div>
+    </div>
+
+    <hr class="w-full h-0.5 border-gray-200" />
+
+    <div class="grid items-center w-full grid-cols-4 p-2 max-w-7xl text-neutral-500">
+      <div class="justify-self-start">
+        <!-- FormaSim logo -->
+        <FormaSimLogo class="m-4 h-14" />
+      </div>
+      <div class="col-span-2 justify-self-center">
+        <!-- NavBar -->
+        <nav>
+          <ul class="flex flex-row gap-12 ">
+            <li>
+              <RouterLink to="/" class="transition-all hover:text-primary" active-class="font-semibold text-primary">
+                Accueil
+              </RouterLink>
+            </li>
+            <li>
+              <RouterLink to="/formations" class="transition-all hover:text-primary"
+                active-class="font-semibold text-primary">Mes cours</RouterLink>
+            </li>
+            <li>
+              <RouterLink to="/profile" class="transition-all hover:text-primary"
+                active-class="font-semibold text-primary">
+                Mon profil</RouterLink>
+            </li>
+            <li>
+              <a href="https://formasim.ch/fr/contact"
+                class="flex flex-row items-center gap-2 transition-all hover:text-primary" target="_blank">
+                Contact
+                <OpenInNewIcon class="size-4" />
+              </a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+      <div class="flex flex-row items-center gap-6 justify-self-end text-neutral-400">
+        <!-- Profile elements -->
+        <template v-if="auth.user">
+          <div @click="toggleProfilePanel" ref="profileButtonRef"
+            class="grid text-xl text-white rounded-full shadow-md cursor-pointer size-12 bg-primary place-items-center">
+            {{ auth.user?.firstname.charAt(0) }}{{ auth.user?.lastname.charAt(0) }}
+          </div>
+          <Teleport to="body">
+            <div v-show="profilePanelShown" ref="profilePanelRef"
+              class="absolute flex flex-col gap-2 gap-4 p-4 bg-white shadow-md rounded-xl" :style="(profileButtonRef && profilePanelRef) ?
+                {
+                  // Automatically align the profile panel to the right and bottom of the profile button
+                  right: windowWidth - profileButtonRef.offsetLeft - profileButtonRef.clientWidth + 'px',
+                  top: profileButtonRef.offsetTop + profileButtonRef.clientHeight + 10 + 'px',
+                }
+                : {}">
+              <!-- Card Header -->
+              <div class="flex flex-row items-center gap-4">
+                <div
+                  class="grid text-xl text-white rounded-full shadow-md cursor-pointer size-12 bg-primary place-items-center">
+                  {{ auth.user?.firstname.charAt(0) }}{{ auth.user?.lastname.charAt(0) }}
+                </div>
+                <div class="flex flex-col">
+                  <span class="font-semibold">
+                    {{ auth.user?.firstname }} {{ auth.user?.lastname }}
+                  </span>
+                </div>
+              </div>
+
+              <!-- Card Body -->
+              <div class="flex flex-col items-stretch gap-2">
+                <div @click="logout" class="flex flex-row items-center gap-2 text-red-500 cursor-pointer">
+                  <LogoutIcon class="size-6" />
+                  <span>
+                    Déconnexion
+                  </span>
+                </div>
+              </div>
+            </div>
+          </Teleport>
+        </template>
+        <template v-else>
+          <RouterLink to="/login"
+            class="grid transition-all rounded-full hover:bg-primary size-12 bg-neutral-300 place-items-center group">
+            <LoginIcon class="mr-1 transition-all size-6 text-neutral-500 group-hover:text-white" />
+          </RouterLink>
+        </template>
       </div>
     </div>
   </div>
