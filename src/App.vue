@@ -7,7 +7,10 @@ import TheHeader from '@/components/TheHeader.vue'
 import TheFooter from '@/components/TheFooter.vue'
 
 const route = useRoute()
-const isFullscreenRoute = computed(() => route.path === '/login')
+
+const fullscreenRoutes = ['/login', '/reset-password', '/forgot-password']
+
+const isFullscreenRoute = computed(() => fullscreenRoutes.includes(route.path))
 const header = ref<HTMLElement | null>(null)
 const headerHeight = computed(() => header.value?.clientHeight)
 
