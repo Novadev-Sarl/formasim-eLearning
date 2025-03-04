@@ -12,6 +12,7 @@ import FormaSimLogo from '@/assets/icons/formasim.svg'
 import { ref } from 'vue'
 import { useWindowSize } from '@vueuse/core'
 import { useAuthStore } from '@/stores/auth'
+import { vOnClickOutside } from '@vueuse/components'
 
 const auth = useAuthStore()
 
@@ -113,7 +114,7 @@ const logout = () => {
             {{ auth.user?.firstname.charAt(0) }}{{ auth.user?.lastname.charAt(0) }}
           </div>
           <Teleport to="body">
-            <div v-show="profilePanelShown" ref="profilePanelRef"
+            <div v-show="profilePanelShown" ref="profilePanelRef" v-on-click-outside="() => profilePanelShown = false"
               class="absolute flex flex-col gap-6 p-4 bg-white shadow-md rounded-xl" :style="(profileButtonRef && profilePanelRef) ?
                 {
                   // Automatically align the profile panel to the right and bottom of the profile button
