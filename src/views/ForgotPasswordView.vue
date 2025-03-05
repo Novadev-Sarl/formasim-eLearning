@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import axios from 'axios';
-import ArrowBackIcon from '@/components/icons/ArrowBackIcon.vue';
 import Logo from '@/assets/icons/formasim.svg';
+import ArrowBackIcon from '@/assets/icons/arrow-back.svg';
 
 const email = ref('');
 const error = ref<string | null>(null)

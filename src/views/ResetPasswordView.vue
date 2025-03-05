@@ -2,8 +2,8 @@
 import { useRoute } from 'vue-router';
 import { ref } from 'vue';
 import axios, { AxiosError } from 'axios';
-import ArrowBackIcon from '@/components/icons/ArrowBackIcon.vue';
 import Logo from '@/assets/icons/formasim.svg';
+import ArrowBackIcon from '@/assets/icons/arrow-back.svg';
 
 const route = useRoute();
 
