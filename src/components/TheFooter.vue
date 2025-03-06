@@ -17,7 +17,7 @@ const year = new Date().getFullYear()
           <div class="flex flex-col">
             <span>FormaSim Sàrl</span>
             <span><a href="tel:+41797897312" class="text-primary">+41 79 789 73 12</a></span>
-            <span><a href="mailto:contact@formasim.ch" class="text-primary">contact@formasim.ch</a></span>
+            <span><a href="mailto:info@formasim.ch" class="text-primary">info@formasim.ch</a></span>
           </div>
 
           <div class="flex flex-col">
@@ -38,22 +38,21 @@ const year = new Date().getFullYear()
         <!-- Other pages -->
         <div class="flex flex-col gap-3">
           <span class="text-base font-semibold">Autres pages</span>
-          <a href="">Politique de confidentialité</a>
-          <a href="">Conditions générales de vente</a>
-          <a href="">Mentions légales</a>
+          <a href="https://formasim.ch/fr/conditions-generales">Conditions générales d'utilisation</a>
+          <a href="https://formasim.ch/fr/protection-des-donnees">Protection des données</a>
         </div>
 
         <!-- Social media -->
         <div class="flex flex-col gap-3">
           <span class="text-base font-semibold">Suivez-nous</span>
           <div class="flex flex-row items-center gap-4 text-neutral-500">
-            <a href="">
+            <a href="https://www.facebook.com/AntoineChoffatFormationsContinuesPourAdultes">
               <FacebookIcon class="transition-colors duration-300 size-4 hover:text-black" />
             </a>
-            <a href="">
+            <a href="https://www.instagram.com/formasim_sarl/">
               <InstagramIcon class="transition-colors duration-300 size-4 hover:text-black" />
             </a>
-            <a href="">
+            <a href="https://www.linkedin.com/in/antoine-choffat-6821b6a0/">
               <LinkedInIcon class="transition-colors duration-300 size-4 hover:text-black" />
             </a>
           </div>
