@@ -39,8 +39,11 @@ const logout = () => {
         <span class="flex flex-row items-center gap-4">
           <CallIcon class="text-primary" />
 
-          <span>Tél : <a href="tel:+41786099716" class="transition-all text-neutral-400 hover:text-black">+41 78 609 97
-              16</a></span>
+          <span>Tél :
+            <a href="tel:+41797897312" class="transition-all text-neutral-400 hover:text-black">
+              +41 79 789 73 12
+            </a>
+          </span>
         </span>
 
         <span class="flex flex-row items-center gap-4">
