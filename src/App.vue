@@ -12,7 +12,6 @@ const fullscreenRoutes = ['/login', '/reset-password', '/forgot-password']
 
 const isFullscreenRoute = computed(() => fullscreenRoutes.includes(route.path))
 const header = ref<HTMLElement | null>(null)
-const headerHeight = computed(() => header.value?.clientHeight)
 
 axios.get(import.meta.env.VITE_API_URL + '/sanctum/csrf-cookie', {
   withCredentials: true,
@@ -26,7 +25,7 @@ axios.get(import.meta.env.VITE_API_URL + '/sanctum/csrf-cookie', {
     <TheHeader />
   </header>
 
-  <RouterView :style="{ marginTop: headerHeight ? (headerHeight + 20) + 'px' : '0' }" />
+  <RouterView :style="{ paddingTop: isFullscreenRoute ? '0px' : `${header?.clientHeight}px` }" class="min-h-screen" />
 
   <footer v-if="!isFullscreenRoute">
     <TheFooter />
