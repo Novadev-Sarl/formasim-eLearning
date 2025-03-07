@@ -8,6 +8,11 @@ import AccountCircleIcon from '@/assets/icons/account-circle.svg'
 import SchoolIcon from '@/assets/icons/school.svg'
 import LicenseIcon from '@/assets/icons/license.svg'
 
+import TheDashboard from './ProfileView/TheDashboard.vue'
+import ProfileInformations from './ProfileView/ProfileInformations.vue'
+import CurrentFormations from './ProfileView/CurrentFormations.vue'
+import CertificatesList from './ProfileView/CertificatesList.vue'
+
 const auth = useAuthStore()
 const router = useRouter()
 const route = useRoute()
@@ -23,40 +28,44 @@ const tabs = [
   {
     label: 'Tableau de bord',
     icon: DashboardIcon,
+    content: TheDashboard,
   },
   {
     label: 'Informations personnelles',
     icon: AccountCircleIcon,
+    content: ProfileInformations,
   },
   {
     label: 'Cours actifs/suivis',
     icon: SchoolIcon,
+    content: CurrentFormations,
   },
   {
     label: 'Mes certificats',
     icon: LicenseIcon,
+    content: CertificatesList,
   },
 ]
 </script>
 
 <template>
-  <div class="w-full flex justify-center bg-neutral-50">
-    <div class="w-full max-w-7xl flex pt-10 items-start">
+  <div class="flex justify-center w-full bg-neutral-50">
+    <div class="flex items-start w-full gap-12 pt-10 max-w-7xl">
       <!-- Profile card -->
-      <aside class="w-1/4 p-6 bg-white ring-1 ring-neutral-200 rounded-sm">
+      <aside class="w-1/4 p-6 bg-white rounded-sm ring-1 ring-neutral-200">
         <!-- Profile infos -->
-        <div class="flex flex-col gap-4 items-center py-4">
+        <div class="flex flex-col items-center gap-4 py-4">
           <!-- Profile picture -->
           <div>
             <img
               :src="auth.user?.picture"
               alt="Profile"
-              class="size-16 rounded-full shadow-md"
+              class="rounded-full shadow-md size-16"
               v-if="auth.user?.picture"
             />
             <div
               v-else
-              class="size-16 rounded-full bg-primary text-white flex items-center justify-center text-2xl shadow-md"
+              class="flex items-center justify-center text-2xl text-white rounded-full shadow-md size-16 bg-primary"
             >
               {{ auth.user?.firstname.charAt(0) }}{{ auth.user?.lastname.charAt(0) }}
             </div>
@@ -64,7 +73,7 @@ const tabs = [
 
           <!-- Profile infos -->
           <div class="flex flex-col items-center">
-            <span class="font-semibold text-lg">
+            <span class="text-lg font-semibold">
               {{ auth.user?.firstname }} {{ auth.user?.lastname }}
             </span>
             <span class="text-sm text-neutral-500">{{ auth.user?.email }}</span>
@@ -72,7 +81,7 @@ const tabs = [
 
           <!-- Logout button -->
           <button
-            class="text-primary cursor-pointer font-semibold"
+            class="font-semibold cursor-pointer text-primary"
             @click="
               () => {
                 auth.logout()
@@ -84,7 +93,7 @@ const tabs = [
           </button>
         </div>
 
-        <hr class="border-neutral-200 my-4" />
+        <hr class="my-4 border-neutral-200" />
 
         <!-- Tabs -->
         <div class="py-4">
@@ -92,7 +101,7 @@ const tabs = [
             <ul class="flex flex-col gap-5">
               <li v-for="(tab, index) in tabs" :key="tab.label">
                 <button
-                  class="flex flex-row items-center gap-2 cursor-pointer hover:text-black/60 transition-all duration-300"
+                  class="flex flex-row items-center gap-2 transition-all duration-300 cursor-pointer hover:text-black/60"
                   @click="selectedTab = index"
                   :class="{ 'text-primary hover:text-primary': selectedTab === index }"
                 >
@@ -104,6 +113,9 @@ const tabs = [
           </nav>
         </div>
       </aside>
+
+      <!-- Tab content -->
+      <component :is="tabs[selectedTab].content" class="grow" />
     </div>
   </div>
 </template>
