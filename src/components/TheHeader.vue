@@ -13,8 +13,10 @@ import { ref } from 'vue'
 import { useWindowSize } from '@vueuse/core'
 import { useAuthStore } from '@/stores/auth'
 import { vOnClickOutside } from '@vueuse/components'
+import { useRouter } from 'vue-router'
 
 const auth = useAuthStore()
+const router = useRouter()
 
 const profilePanelShown = ref(false)
 const profilePanelRef = ref<HTMLDivElement>()
@@ -168,9 +170,17 @@ const logout = () => {
               "
             >
               <!-- Card Header -->
-              <div class="flex flex-row items-center gap-4">
+              <div
+                class="flex flex-row items-center gap-4 cursor-pointer"
+                @click="
+                  () => {
+                    router.push('/profile')
+                    profilePanelShown = false
+                  }
+                "
+              >
                 <div
-                  class="grid text-xl text-white rounded-full shadow-md cursor-pointer size-12 bg-primary place-items-center"
+                  class="grid text-xl text-white rounded-full shadow-md size-12 bg-primary place-items-center"
                 >
                   {{ auth.user?.firstname.charAt(0) }}{{ auth.user?.lastname.charAt(0) }}
                 </div>
