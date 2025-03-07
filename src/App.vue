@@ -21,7 +21,7 @@ axios.get(import.meta.env.VITE_API_URL + '/sanctum/csrf-cookie', {
 </script>
 
 <template>
-  <header class="fixed top-0 left-0 flex flex-col w-full bg-neutral-100" v-if="!isFullscreenRoute" ref="header">
+  <header class="fixed top-0 left-0 flex flex-col w-full bg-white" v-if="!isFullscreenRoute" ref="header">
     <TheHeader />
   </header>
 
