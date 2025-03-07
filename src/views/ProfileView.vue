@@ -1,7 +1,12 @@
 <script setup lang="ts">
 import { useAuthStore } from '@/stores/auth.ts'
 import { useRouter, useRoute } from 'vue-router'
-import { watchEffect } from 'vue'
+import { watchEffect, ref } from 'vue'
+
+import DashboardIcon from '@/assets/icons/dashboard.svg'
+import AccountCircleIcon from '@/assets/icons/account-circle.svg'
+import SchoolIcon from '@/assets/icons/school.svg'
+import LicenseIcon from '@/assets/icons/license.svg'
 
 const auth = useAuthStore()
 const router = useRouter()
@@ -12,6 +17,26 @@ watchEffect(() => {
     router.push(`/login?redirect=${route.path}`)
   }
 })
+
+const selectedTab = ref(0)
+const tabs = [
+  {
+    label: 'Tableau de bord',
+    icon: DashboardIcon,
+  },
+  {
+    label: 'Informations personnelles',
+    icon: AccountCircleIcon,
+  },
+  {
+    label: 'Cours actifs/suivis',
+    icon: SchoolIcon,
+  },
+  {
+    label: 'Mes certificats',
+    icon: LicenseIcon,
+  },
+]
 </script>
 
 <template>
@@ -61,7 +86,23 @@ watchEffect(() => {
 
         <hr class="border-neutral-200 my-4" />
 
-        <div></div>
+        <!-- Tabs -->
+        <div class="py-4">
+          <nav>
+            <ul class="flex flex-col gap-5">
+              <li v-for="(tab, index) in tabs" :key="tab.label">
+                <button
+                  class="flex flex-row items-center gap-2 cursor-pointer hover:text-black/60 transition-all duration-300"
+                  @click="selectedTab = index"
+                  :class="{ 'text-primary hover:text-primary': selectedTab === index }"
+                >
+                  <component :is="tab.icon" />
+                  {{ tab.label }}
+                </button>
+              </li>
+            </ul>
+          </nav>
+        </div>
       </aside>
     </div>
   </div>
