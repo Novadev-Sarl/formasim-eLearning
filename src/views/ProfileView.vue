@@ -14,7 +14,7 @@ const route = useRoute()
 
 watchEffect(() => {
   if (!auth.user) {
-    router.push(`/login?redirect=${route.path}`)
+    router.replace(`/login?redirect=${route.path}`)
   }
 })
 
