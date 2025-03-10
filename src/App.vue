@@ -5,9 +5,11 @@ import axios from 'axios'
 
 import TheHeader from '@/components/TheHeader.vue'
 import TheFooter from '@/components/TheFooter.vue'
+import ToastNotification from '@/components/ToastNotification.vue'
+import { useNotificationStore } from '@/stores/notification'
 
 const route = useRoute()
-
+const notificationStore = useNotificationStore()
 const fullscreenRoutes = ['/login', '/reset-password', '/forgot-password']
 
 const isFullscreenRoute = computed(() => fullscreenRoutes.includes(route.path))
@@ -30,4 +32,29 @@ axios.get(import.meta.env.VITE_API_URL + '/sanctum/csrf-cookie', {
   <footer v-if="!isFullscreenRoute">
     <TheFooter />
   </footer>
+
+  <Teleport to="body">
+    <div class="fixed top-4 right-4 flex flex-col gap-4">
+      <TransitionGroup name="toast-notification">
+        <ToastNotification v-for="notification in notificationStore.notifications" :key="notification.id"
+          @close="notificationStore.removeNotification(notification.id)" :notification="notification" />
+      </TransitionGroup>
+    </div>
+  </Teleport>
 </template>
+
+<style>
+.toast-notification-enter-active,
+.toast-notification-leave-active {
+  transition: all 0.3s ease;
+}
+
+.toast-notification-enter-from {
+  opacity: 0;
+  transform: translateX(10px);
+}
+
+.toast-notification-leave-to {
+  opacity: 0;
+}
+</style>
