@@ -52,7 +52,7 @@ const tabs = [
   <div class="flex justify-center w-full bg-neutral-50">
     <div class="flex items-start w-full gap-12 pt-10 max-w-7xl">
       <!-- Profile card -->
-      <aside class="w-1/4 p-6 bg-white rounded-sm ring-1 ring-neutral-200">
+      <aside class="w-1/4 p-6 bg-white rounded-sm ring-1 ring-neutral-100">
         <!-- Profile infos -->
         <div class="flex flex-col items-center gap-4 py-4">
           <!-- Profile picture -->
