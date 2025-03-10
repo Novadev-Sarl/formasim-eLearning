@@ -8,7 +8,7 @@ import AccountCircleIcon from '@/assets/icons/account-circle.svg'
 import SchoolIcon from '@/assets/icons/school.svg'
 import LicenseIcon from '@/assets/icons/license.svg'
 
-import TheDashboard from './ProfileView/TheDashboard.vue'
+import TheDashboard from './ProfileView/ProfileDashboard.vue'
 import ProfileInformations from './ProfileView/ProfileInformations.vue'
 import CurrentFormations from './ProfileView/CurrentFormations.vue'
 import CertificatesList from './ProfileView/CertificatesList.vue'
