@@ -1,8 +1,11 @@
 <script setup lang="ts">
 import { useAuthStore } from '@/stores/auth'
+import { useNotificationStore } from '@/stores/notification'
+import { AxiosError } from 'axios'
 import { ref } from 'vue'
 
 const auth = useAuthStore()
+const notificationStore = useNotificationStore()
 
 const password = ref('')
 const passwordConfirmation = ref('')
@@ -42,12 +45,27 @@ const savePassword = async () => {
 
   passwordInput.value?.setCustomValidity('')
 
-  await auth.updateUser({
-    password: password.value,
-  })
+  try {
+    await auth.updateUser({
+      password: password.value,
+    })
 
-  password.value = ''
-  passwordConfirmation.value = ''
+    notificationStore.addNotification('Mot de passe mis à jour avec succès', 'success')
+    password.value = ''
+    passwordConfirmation.value = ''
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      if (error.response?.status === 400) {
+        notificationStore.addNotification(error.response?.data.message, 'error')
+        return;
+      }
+    }
+
+
+    notificationStore.addNotification('Une erreur est survenue lors de la mise à jour du mot de passe', 'error')
+    console.error(error)
+    return;
+  }
 }
 </script>
 
