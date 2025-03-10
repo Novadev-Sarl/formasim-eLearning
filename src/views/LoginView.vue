@@ -4,11 +4,13 @@ import Logo from '@/assets/icons/formasim.svg'
 
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { useNotificationStore } from '@/stores/notification'
 import { ref, watchEffect } from 'vue'
 import { AxiosError } from 'axios'
 import { RouterLink } from 'vue-router'
 
 const auth = useAuthStore()
+const notificationStore = useNotificationStore()
 const router = useRouter()
 const route = useRoute()
 
@@ -22,8 +24,6 @@ const email = ref('')
 const password = ref('')
 const remember = ref(false)
 
-const userError = ref<string | null>(null)
-
 const isLoggingIn = ref(false)
 
 const login = async () => {
@@ -35,16 +35,19 @@ const login = async () => {
   } catch (error) {
     if (error instanceof AxiosError) {
       if (error.response?.status === 401) {
-        userError.value = 'Email ou mot de passe incorrect'
+        notificationStore.addNotification('Email ou mot de passe incorrect', 'error')
         return
       }
 
       if (error.response?.status === 422) {
-        userError.value = 'Veuillez vérifier vos informations de connexion'
+        notificationStore.addNotification(
+          'Veuillez vérifier vos informations de connexion',
+          'error',
+        )
         return
       }
 
-      userError.value = 'Une erreur est survenue lors de la connexion'
+      notificationStore.addNotification('Une erreur est survenue lors de la connexion', 'error')
     }
     console.error(error)
   } finally {
@@ -124,8 +127,6 @@ const login = async () => {
               Mot de passe oublié ?
             </RouterLink>
           </div>
-
-          <span v-if="userError" class="text-red-500">{{ userError }}</span>
 
           <button
             type="submit"
