@@ -202,7 +202,7 @@ const headerRef = ref<HTMLDivElement>()
 
       <!-- Profile elements -->
       <div
-        class="flex-row items-center hidden col-start-1 gap-6 lg:flex lg:justify-self-end text-neutral-400"
+        class="flex-row items-center hidden gap-6 max-lg:col-start-1 lg:flex lg:justify-self-end text-neutral-400"
       >
         <template v-if="auth.user">
           <div
