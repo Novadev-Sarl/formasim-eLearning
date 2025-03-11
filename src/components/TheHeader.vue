@@ -9,11 +9,15 @@ import LogoutIcon from '@/assets/icons/logout.svg'
 import LoginIcon from '@/assets/icons/login.svg'
 import FormaSimLogo from '@/assets/icons/formasim.svg'
 
-import { ref } from 'vue'
-import { useWindowSize } from '@vueuse/core'
+import { computed, ref } from 'vue'
+import { useWindowSize, useBreakpoints, breakpointsTailwind } from '@vueuse/core'
 import { useAuthStore } from '@/stores/auth'
 import { vOnClickOutside } from '@vueuse/components'
 import { useRouter } from 'vue-router'
+
+const breakpoints = useBreakpoints(breakpointsTailwind)
+
+const isDesktop = computed(() => breakpoints.greater('lg').value)
 
 const auth = useAuthStore()
 const router = useRouter()
@@ -35,8 +39,8 @@ const logout = () => {
 
 <template>
   <div class="flex flex-col items-center w-full">
-    <div class="flex flex-row justify-between w-full p-2 max-w-7xl">
-      <!-- Contact section -->
+    <!-- Contact section -->
+    <div class="flex-row justify-between hidden w-full p-2 xl:flex max-xl:px-8 max-w-7xl">
       <div class="flex flex-row gap-6 text-sm text-neutral-600">
         <span class="flex flex-row items-center gap-4">
           <CallIcon class="text-primary" />
@@ -91,13 +95,16 @@ const logout = () => {
 
     <hr class="w-full h-0.5 border-gray-200" />
 
-    <div class="grid items-center w-full grid-cols-4 p-2 max-w-7xl text-neutral-500">
-      <div class="justify-self-start">
+    <div
+      class="grid items-center w-full grid-cols-4 p-2 max-xl:px-8 max-xl:py-6 max-w-7xl text-neutral-500"
+    >
+      <div class="hidden justify-self-start lg:flex">
         <!-- FormaSim logo -->
         <FormaSimLogo class="my-4 h-14" />
       </div>
-      <div class="col-span-2 justify-self-center">
-        <!-- NavBar -->
+
+      <!-- NavBar -->
+      <div class="hidden col-span-2 justify-self-center lg:flex">
         <nav>
           <ul class="flex flex-row gap-12">
             <li>
@@ -139,8 +146,11 @@ const logout = () => {
           </ul>
         </nav>
       </div>
-      <div class="flex flex-row items-center gap-6 justify-self-end text-neutral-400">
-        <!-- Profile elements -->
+
+      <!-- Profile elements -->
+      <div
+        class="flex flex-row items-center col-start-1 gap-6 lg:col-start-4 lg:justify-self-end text-neutral-400"
+      >
         <template v-if="auth.user">
           <div
             @click="toggleProfilePanel"
@@ -154,18 +164,23 @@ const logout = () => {
               v-show="profilePanelShown"
               ref="profilePanelRef"
               v-on-click-outside="() => (profilePanelShown = false)"
-              class="absolute flex flex-col gap-6 p-4 bg-white shadow-md rounded-xl"
+              class="fixed flex flex-col gap-6 p-4 bg-white shadow-md rounded-xl max-lg:left-4 max-lg:right-4 ring-1 ring-neutral-200"
               :style="
                 profileButtonRef && profilePanelRef
-                  ? {
-                      // Automatically align the profile panel to the right and bottom of the profile button
-                      right:
-                        windowWidth -
-                        profileButtonRef.offsetLeft -
-                        profileButtonRef.clientWidth +
-                        'px',
-                      top: profileButtonRef.offsetTop + profileButtonRef.clientHeight + 10 + 'px',
-                    }
+                  ? isDesktop
+                    ? {
+                        // Automatically align the profile panel to the right and bottom of the profile button
+                        right:
+                          windowWidth -
+                          profileButtonRef.offsetLeft -
+                          profileButtonRef.clientWidth +
+                          'px',
+                        top: profileButtonRef.offsetTop + profileButtonRef.clientHeight + 10 + 'px',
+                      }
+                    : {
+                        // Automatically align the profile panel to the bottom of the profile button
+                        top: profileButtonRef.offsetTop + profileButtonRef.clientHeight + 10 + 'px',
+                      }
                   : {}
               "
             >
@@ -213,6 +228,8 @@ const logout = () => {
           </RouterLink>
         </template>
       </div>
+
+      <!-- Burger menu -->
     </div>
   </div>
 </template>
