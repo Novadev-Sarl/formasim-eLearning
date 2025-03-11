@@ -9,6 +9,8 @@ import LogoutIcon from '@/assets/icons/logout.svg'
 import LoginIcon from '@/assets/icons/login.svg'
 import FormaSimLogo from '@/assets/icons/formasim.svg'
 
+import TheMobileMenu from '@/components/TheMobileMenu.vue'
+
 import { computed, ref } from 'vue'
 import { useWindowSize, useBreakpoints, breakpointsTailwind, useAnimate } from '@vueuse/core'
 import { useAuthStore } from '@/stores/auth'
@@ -149,9 +151,9 @@ const headerRef = ref<HTMLDivElement>()
     <div
       class="flex flex-row items-center justify-between w-full grid-cols-4 p-2 lg:grid max-xl:px-8 max-xl:py-6 max-w-7xl text-neutral-500"
     >
-      <div class="hidden justify-self-start lg:flex">
+      <div class="flex justify-self-start">
         <!-- FormaSim logo -->
-        <FormaSimLogo class="my-4 h-14" />
+        <FormaSimLogo class="h-10 my-2 lg:my-4 lg:h-14" />
       </div>
 
       <!-- NavBar -->
@@ -200,7 +202,7 @@ const headerRef = ref<HTMLDivElement>()
 
       <!-- Profile elements -->
       <div
-        class="flex flex-row items-center col-start-1 gap-6 lg:col-start-4 lg:justify-self-end text-neutral-400"
+        class="flex-row items-center hidden col-start-1 gap-6 lg:flex lg:justify-self-end text-neutral-400"
       >
         <template v-if="auth.user">
           <div
@@ -294,33 +296,7 @@ const headerRef = ref<HTMLDivElement>()
         </button>
       </div>
 
-      <!-- Mobile menu -->
-      <Teleport to="body">
-        <Transition name="mobile-menu">
-          <div
-            v-show="navigationMenuShown"
-            class="fixed left-0 right-0 flex flex-col gap-6 p-4 bg-white rounded-b-lg shadow-xl z-[2]"
-            :style="{
-              top: (headerRef?.clientHeight ?? 0) + 'px',
-            }"
-          >
-            <div>rawr</div>
-            <div>rawr</div>
-          </div>
-        </Transition>
-      </Teleport>
+      <TheMobileMenu v-model="navigationMenuShown" />
     </div>
   </div>
 </template>
-
-<style scoped>
-.mobile-menu-enter-active,
-.mobile-menu-leave-active {
-  transition: all 0.3s ease;
-}
-
-.mobile-menu-enter-from,
-.mobile-menu-leave-to {
-  transform: translateY(-150%);
-}
-</style>
