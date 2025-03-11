@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import DownloadIcon from '@/assets/icons/download.svg'
+import { breakpointsTailwind, useBreakpoints } from '@vueuse/core'
 
 const activeTab = ref(0)
 const tabs = ['Tous']
@@ -12,6 +13,9 @@ const certificates = ref([
     duration: '10h',
   },
 ])
+
+const breakpoints = useBreakpoints(breakpointsTailwind)
+const isDesktop = breakpoints.greater('md')
 </script>
 
 <template>
@@ -35,7 +39,7 @@ const certificates = ref([
         </button>
       </div>
 
-      <table class="w-full text-sm border-collapse rounded-md">
+      <table class="w-full text-sm border-collapse rounded-md" v-if="isDesktop">
         <thead class="text-left bg-neutral-100">
           <tr>
             <th>Nom du cours</th>
@@ -66,6 +70,27 @@ const certificates = ref([
           </tr>
         </tbody>
       </table>
+
+      <div class="flex flex-col gap-4" v-else>
+        <div
+          class="container flex flex-row justify-between p-4"
+          v-for="certificate in certificates"
+          :key="certificate.name"
+        >
+          <div class="flex flex-col gap-1">
+            <span class="text-lg font-bold">{{ certificate.name }}</span>
+            <span class="text-sm text-neutral-500">Obtenu le {{ certificate.date }}</span>
+            <span class="text-sm text-neutral-500"
+              >Durée du cours : {{ certificate.duration }}</span
+            >
+          </div>
+          <button
+            class="flex flex-row items-center gap-1 cursor-pointer text-primary hover:text-primary-dark"
+          >
+            <DownloadIcon class="size-8" />
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 </template>
