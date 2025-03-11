@@ -57,17 +57,17 @@ const login = async () => {
 </script>
 
 <template>
-  <main class="flex flex-row w-screen h-screen">
+  <main class="flex flex-row 2xl:justify-around justify-stretch">
     <!-- Left cover -->
     <div
-      class="relative w-1/2 h-full bg-center bg-cover"
+      class="relative hidden h-screen bg-center bg-cover 2xl:block grow"
       :style="{ backgroundImage: `url(${LoginCover})` }"
     >
       <div
         class="absolute top-0 bottom-0 left-0 right-0 bg-gradient-to-b from-transparent to-black/80"
       >
         <div
-          class="absolute bottom-24 left-[50%] translate-x-[-50%] text-white w-1/2 text-center flex flex-col gap-4 items-center"
+          class="absolute bottom-24 left-[50%] translate-x-[-50%] text-white w-lg max-w-full text-center flex flex-col gap-4 items-center"
         >
           <h1 class="text-4xl font-bold text-center">Bienvenue sur l'eLearning FormaSim</h1>
           <p>
@@ -82,13 +82,18 @@ const login = async () => {
     </div>
 
     <!-- Form container -->
-    <div class="w-1/2">
+    <div
+      class="flex flex-col justify-between w-full h-screen 2xl:w-1/2 2xl:min-w-4xl shrink-0 2xl:overflow-y-scroll"
+    >
       <!-- Form -->
-      <div class="flex flex-col gap-8 p-24">
+      <div class="flex flex-col gap-8 p-8 md:p-24">
         <!-- Header -->
         <div class="flex flex-row items-center justify-between">
-          <Logo class="h-12" />
-          <RouterLink to="/" class="text-sm underline text-neutral-300">
+          <RouterLink to="/">
+            <Logo class="h-12" />
+          </RouterLink>
+
+          <RouterLink to="/" class="hidden text-sm underline text-neutral-300 md:block">
             Retour à la page d'accueil
           </RouterLink>
         </div>
@@ -117,7 +122,7 @@ const login = async () => {
             />
           </div>
 
-          <div class="flex flex-row justify-between">
+          <div class="flex flex-col justify-between gap-4 md:flex-row">
             <div class="flex flex-row items-center gap-2">
               <input type="checkbox" id="remember" v-model="remember" class="w-4 h-4" />
               <label for="remember">Se souvenir de moi</label>
@@ -139,7 +144,7 @@ const login = async () => {
       </div>
 
       <!-- Footer -->
-      <div class="absolute bottom-0 px-24 pb-10 pt-18 bg-neutral-100">
+      <div class="p-8 pb-10 md:px-24 md:pt-18 bg-neutral-100">
         <p class="font-bold">Informations importantes</p>
         <p>
           Les formations en ligne de FormaSim vous permettent d'obtenir des certificats attestant de
@@ -147,20 +152,20 @@ const login = async () => {
           indispensables pour acquérir une pratique encadrée et validée par des experts.
         </p>
         <hr class="mt-16 mb-4 border-neutral-300" />
-        <div class="flex flex-row justify-between gap-4 text-sm">
-          <div class="flex flex-row gap-2 text-neutral-300">
-            <a href="https://formasim.ch/fr/conditions-generales" class="text-primary"
-              >Conditions générales d'utilisation</a
-            >
-            <span>|</span>
-            <a href="https://formasim.ch/fr/protection-des-donnees" class="text-primary"
-              >Protection des données</a
-            >
+        <div class="flex flex-col justify-between gap-4 text-sm md:items-center md:flex-row">
+          <div class="flex flex-col gap-2 lg:flex-row text-neutral-300">
+            <a href="https://formasim.ch/fr/conditions-generales" class="text-primary">
+              Conditions générales d'utilisation
+            </a>
+            <span class="hidden lg:block">|</span>
+            <a href="https://formasim.ch/fr/protection-des-donnees" class="text-primary">
+              Protection des données
+            </a>
           </div>
-          <span
-            >Conçu et développé par
-            <a href="https://novadev.ch" class="text-primary">Novadev Sàrl</a></span
-          >
+          <span>
+            Conçu et développé par
+            <a href="https://novadev.ch" class="text-primary">Novadev Sàrl</a>
+          </span>
         </div>
       </div>
     </div>
