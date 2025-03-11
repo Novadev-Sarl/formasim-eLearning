@@ -2,6 +2,19 @@
 
 @theme {
   --color-primary: #27ae60;
+
+  --color-primary-50: #f2faf6;
+  --color-primary-100: #e6f5ed;
+  --color-primary-200: #c0e6d1;
+  --color-primary-300: #9ad7b5;
+  --color-primary-400: #5fc18e;
+  --color-primary-500: #27ae60;
+  --color-primary-600: #209150;
+  --color-primary-700: #1a7440;
+  --color-primary-800: #135330;
+  --color-primary-900: #0e3f24;
+  --color-primary-950: #092a18;
+
   --default-transition-duration: 300ms;
 }
 
@@ -26,5 +39,9 @@
 
   .action:disabled {
     @apply opacity-50 cursor-not-allowed;
+  }
+
+  .container {
+    @apply bg-white rounded-sm ring-1 ring-neutral-100;
   }
 }

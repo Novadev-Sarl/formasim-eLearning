@@ -12,7 +12,7 @@ import ScheduleIcon from '@/assets/icons/schedule.svg'
     />
 
     <div class="flex flex-col gap-2 px-6 py-4">
-      <div class="flex flex-col gap-6">
+      <div class="flex flex-col gap-4">
         <h3 class="text-lg font-semibold">Formation de base</h3>
 
         <div class="flex flex-row justify-between text-sm">

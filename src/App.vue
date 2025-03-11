@@ -18,26 +18,37 @@ const header = ref<HTMLElement | null>(null)
 axios.get(import.meta.env.VITE_API_URL + '/sanctum/csrf-cookie', {
   withCredentials: true,
   withXSRFToken: true,
-});
-
+})
 </script>
 
 <template>
-  <header class="fixed top-0 left-0 flex flex-col w-full bg-white" v-if="!isFullscreenRoute" ref="header">
+  <header
+    class="fixed top-0 left-0 flex flex-col w-full bg-white"
+    v-if="!isFullscreenRoute"
+    ref="header"
+  >
     <TheHeader />
   </header>
 
-  <RouterView :style="{ paddingTop: isFullscreenRoute ? '0px' : `${header?.clientHeight}px` }" class="min-h-screen" />
+  <RouterView
+    :style="{ paddingTop: isFullscreenRoute ? '0px' : `${header?.clientHeight}px` }"
+    class="min-h-screen"
+    :class="{ 'pb-16': !isFullscreenRoute }"
+  />
 
   <footer v-if="!isFullscreenRoute">
     <TheFooter />
   </footer>
 
   <Teleport to="body">
-    <div class="fixed top-4 right-4 flex flex-col gap-4">
+    <div class="fixed flex flex-col gap-4 top-4 right-4">
       <TransitionGroup name="toast-notification">
-        <ToastNotification v-for="notification in notificationStore.notifications" :key="notification.id"
-          @close="notificationStore.removeNotification(notification.id)" :notification="notification" />
+        <ToastNotification
+          v-for="notification in notificationStore.notifications"
+          :key="notification.id"
+          @close="notificationStore.removeNotification(notification.id)"
+          :notification="notification"
+        />
       </TransitionGroup>
     </div>
   </Teleport>
