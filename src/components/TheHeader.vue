@@ -10,7 +10,7 @@ import LoginIcon from '@/assets/icons/login.svg'
 import FormaSimLogo from '@/assets/icons/formasim.svg'
 
 import { computed, ref } from 'vue'
-import { useWindowSize, useBreakpoints, breakpointsTailwind } from '@vueuse/core'
+import { useWindowSize, useBreakpoints, breakpointsTailwind, useAnimate } from '@vueuse/core'
 import { useAuthStore } from '@/stores/auth'
 import { vOnClickOutside } from '@vueuse/components'
 import { useRouter } from 'vue-router'
@@ -18,6 +18,7 @@ import { useRouter } from 'vue-router'
 const breakpoints = useBreakpoints(breakpointsTailwind)
 
 const isDesktop = computed(() => breakpoints.greater('lg').value)
+const { width: windowWidth } = useWindowSize()
 
 const auth = useAuthStore()
 const router = useRouter()
@@ -26,19 +27,69 @@ const profilePanelShown = ref(false)
 const profilePanelRef = ref<HTMLDivElement>()
 const profileButtonRef = ref<HTMLDivElement>()
 
-const { width: windowWidth } = useWindowSize()
-
 const toggleProfilePanel = () => {
   profilePanelShown.value = !profilePanelShown.value
 }
 
-const logout = () => {
-  auth.logout()
+// Prepare burger menu references
+const navigationMenuShown = ref(false)
+const mobileMenuLine1 = ref<HTMLSpanElement>()
+const mobileMenuLine2 = ref<HTMLSpanElement>()
+const mobileMenuLine3 = ref<HTMLSpanElement>()
+
+// create burger menu animations
+const { play: play1, reverse: reverse1 } = useAnimate(
+  mobileMenuLine1,
+  [
+    { transform: 'translateY(-8px)' },
+    { transform: 'translateY(0) rotate(0)' },
+    { transform: 'rotate(45deg)' },
+  ],
+  { duration: 300, fill: 'both', immediate: false },
+)
+
+const { play: play2, reverse: reverse2 } = useAnimate(
+  mobileMenuLine2,
+  [{ opacity: 1 }, { opacity: 0 }, { opacity: 0 }],
+  { duration: 300, fill: 'both', immediate: false },
+)
+
+const { play: play3, reverse: reverse3 } = useAnimate(
+  mobileMenuLine3,
+  [
+    { transform: 'translateY(8px)' },
+    { transform: 'translateY(0) rotate(0)' },
+    { transform: 'rotate(-45deg)' },
+  ],
+  { duration: 300, fill: 'both', immediate: false },
+)
+
+/**
+ * @var {boolean} played - Whether the burger menu has already been played.
+ * This allows to avoid playing the animation twice, while still keeping the animation paused on page load
+ */
+const played = ref(false)
+const toggleMobileMenu = () => {
+  navigationMenuShown.value = !navigationMenuShown.value
+  if (!played.value) {
+    // The animation should be at least played once, otherwise it will snap to the last frame
+    play1()
+    play2()
+    play3()
+    played.value = true
+  } else {
+    // The animation should be reversed if it has already been played
+    reverse1()
+    reverse2()
+    reverse3()
+  }
 }
+
+const headerRef = ref<HTMLDivElement>()
 </script>
 
 <template>
-  <div class="flex flex-col items-center w-full">
+  <div class="flex flex-col items-center w-full" ref="headerRef">
     <!-- Contact section -->
     <div class="flex-row justify-between hidden w-full p-2 xl:flex max-xl:px-8 max-w-7xl">
       <div class="flex flex-row gap-6 text-sm text-neutral-600">
@@ -96,7 +147,7 @@ const logout = () => {
     <hr class="w-full h-0.5 border-gray-200" />
 
     <div
-      class="grid items-center w-full grid-cols-4 p-2 max-xl:px-8 max-xl:py-6 max-w-7xl text-neutral-500"
+      class="flex flex-row items-center justify-between w-full grid-cols-4 p-2 lg:grid max-xl:px-8 max-xl:py-6 max-w-7xl text-neutral-500"
     >
       <div class="hidden justify-self-start lg:flex">
         <!-- FormaSim logo -->
@@ -209,7 +260,7 @@ const logout = () => {
               <!-- Card Body -->
               <div class="flex flex-col items-stretch gap-2">
                 <div
-                  @click="logout"
+                  @click="auth.logout"
                   class="flex flex-row items-center gap-2 text-red-500 cursor-pointer"
                 >
                   <LogoutIcon class="size-6" />
@@ -230,6 +281,46 @@ const logout = () => {
       </div>
 
       <!-- Burger menu -->
+      <div class="relative lg:hidden">
+        <button
+          @click="toggleMobileMenu"
+          class="relative flex flex-col items-center justify-center transition-colors rounded-md size-8 burger-menu"
+          :class="{ open: navigationMenuShown }"
+          aria-label="Menu"
+        >
+          <span ref="mobileMenuLine1" class="absolute top-1/2 block w-6 h-0.5 bg-black"></span>
+          <span ref="mobileMenuLine2" class="absolute top-1/2 block w-6 h-0.5 bg-black"></span>
+          <span ref="mobileMenuLine3" class="absolute top-1/2 block w-6 h-0.5 bg-black"></span>
+        </button>
+      </div>
+
+      <!-- Mobile menu -->
+      <Teleport to="body">
+        <Transition name="mobile-menu">
+          <div
+            v-show="navigationMenuShown"
+            class="fixed left-0 right-0 flex flex-col gap-6 p-4 bg-white rounded-b-lg shadow-xl z-[2]"
+            :style="{
+              top: (headerRef?.clientHeight ?? 0) + 'px',
+            }"
+          >
+            <div>rawr</div>
+            <div>rawr</div>
+          </div>
+        </Transition>
+      </Teleport>
     </div>
   </div>
 </template>
+
+<style scoped>
+.mobile-menu-enter-active,
+.mobile-menu-leave-active {
+  transition: all 0.3s ease;
+}
+
+.mobile-menu-enter-from,
+.mobile-menu-leave-to {
+  transform: translateY(-150%);
+}
+</style>
