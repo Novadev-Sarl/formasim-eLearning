@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import CourseCard from '@/components/CourseCard.vue'
+import DownloadIcon from '@/assets/icons/download.svg'
 
 const stats = ref([
   {
@@ -15,6 +17,7 @@ const stats = ref([
     value: 10,
   },
 ])
+console.log('rawr')
 </script>
 
 <template>
@@ -37,8 +40,24 @@ const stats = ref([
       </div>
     </div>
 
-    <h2 class="text-lg font-medium">Derniers cours suivis</h2>
+    <h2 class="text-lg font-semibold">Derniers cours suivis</h2>
 
-    <!-- TODO: TBD -->
+    <div class="flex flex-row gap-4">
+      <!-- todo: dynamic courses -->
+      <CourseCard v-for="i in 3" :key="i" class="w-1/3 shadow-md">
+        <template #footer>
+          <!-- todo: dynamic date -->
+          <span class="text-sm text-neutral-500">Suivi le 04.03.2024</span>
+          <!-- todo: link to download -->
+          <div
+            class="flex flex-row items-center gap-1 text-sm cursor-pointer text-primary"
+            @click="() => console.log('dowload certificate')"
+          >
+            <DownloadIcon class="size-5" />
+            <span>Télécharger le certificat</span>
+          </div>
+        </template>
+      </CourseCard>
+    </div>
   </div>
 </template>

@@ -13,6 +13,10 @@
   input[type='checkbox'] {
     @apply w-4 h-4;
   }
+
+  hr {
+    @apply border-neutral-200;
+  }
 }
 
 @layer components {
