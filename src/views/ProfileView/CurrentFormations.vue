@@ -29,8 +29,10 @@ const tabs = ['Cours actifs', 'Cours terminés']
       </div>
 
       <div class="grid grid-cols-3 gap-4">
+        <!-- TODO: Add a link to the course -->
         <CourseCard v-for="i in 10" :key="i">
           <template #footer>
+            <!-- TODO: Add a link to the quizz -->
             <button class="transition cursor-pointer size-fit text-primary hover:text-primary-600">
               Suivre le cours &rarr;
             </button>
