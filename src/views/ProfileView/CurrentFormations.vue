@@ -28,7 +28,7 @@ const tabs = ['Cours actifs', 'Cours terminés']
         </button>
       </div>
 
-      <div class="grid grid-cols-3 gap-4">
+      <div class="flex flex-col grid-cols-3 gap-4 md:grid">
         <!-- TODO: Add a link to the course -->
         <CourseCard v-for="i in 10" :key="i">
           <template #footer>
