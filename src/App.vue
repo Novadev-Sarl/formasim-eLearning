@@ -23,7 +23,7 @@ axios.get(import.meta.env.VITE_API_URL + '/sanctum/csrf-cookie', {
 
 <template>
   <header
-    class="fixed top-0 left-0 flex flex-col w-screen bg-white z-[3] ring-1 ring-neutral-100"
+    class="fixed top-0 left-0 flex flex-col w-full bg-white z-[3] ring-1 ring-neutral-100"
     v-if="!isFullscreenRoute"
     ref="header"
   >
@@ -36,7 +36,7 @@ axios.get(import.meta.env.VITE_API_URL + '/sanctum/csrf-cookie', {
     :class="{ 'pb-16': !isFullscreenRoute }"
   />
 
-  <footer v-if="!isFullscreenRoute" class="w-screen">
+  <footer v-if="!isFullscreenRoute" class="w-full">
     <TheFooter />
   </footer>
 

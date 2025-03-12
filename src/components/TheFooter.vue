@@ -7,7 +7,7 @@ const year = new Date().getFullYear()
 </script>
 
 <template>
-  <div class="flex flex-col w-screen">
+  <div class="flex flex-col w-full">
     <!-- Links-->
     <div class="flex flex-col items-center w-full bg-white max-xl:px-8">
       <div
