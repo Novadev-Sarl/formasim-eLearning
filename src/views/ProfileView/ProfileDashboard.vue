@@ -24,7 +24,7 @@ console.log('rawr')
   <div class="flex flex-col gap-4">
     <h1 class="text-2xl font-bold">Tableau de bord</h1>
     <div
-      class="grid w-full gap-4"
+      class="flex flex-col w-full gap-4 md:flex-row lg:grid"
       :class="{
         'grid-cols-4': stats.length % 3 === 1,
         'grid-cols-3': stats.length % 3 !== 1,
@@ -42,9 +42,9 @@ console.log('rawr')
 
     <h2 class="text-lg font-semibold">Derniers cours suivis</h2>
 
-    <div class="flex flex-row gap-4">
+    <div class="flex flex-col gap-4 md:flex-row">
       <!-- todo: dynamic courses -->
-      <CourseCard v-for="i in 3" :key="i" class="w-1/3 shadow-md">
+      <CourseCard v-for="i in 3" :key="i" class="shadow-md md:w-1/3">
         <template #footer>
           <!-- todo: dynamic date -->
           <span class="text-sm text-neutral-500">Suivi le 04.03.2024</span>

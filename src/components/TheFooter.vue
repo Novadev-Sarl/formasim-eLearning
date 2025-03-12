@@ -7,10 +7,12 @@ const year = new Date().getFullYear()
 </script>
 
 <template>
-  <div class="flex flex-col w-screen">
+  <div class="flex flex-col w-full">
     <!-- Links-->
-    <div class="flex flex-col items-center w-full bg-white">
-      <div class="flex flex-row justify-between w-full py-10 text-sm max-w-7xl">
+    <div class="flex flex-col items-center w-full bg-white max-xl:px-8">
+      <div
+        class="grid flex-row flex-wrap justify-around w-full grid-cols-[auto_auto] gap-8 py-10 text-sm lg:flex max-w-7xl"
+      >
         <!-- Contact -->
         <div class="flex flex-col gap-4">
           <span class="text-base font-semibold">Contactez-nous</span>
@@ -38,7 +40,9 @@ const year = new Date().getFullYear()
         <!-- Other pages -->
         <div class="flex flex-col gap-3">
           <span class="text-base font-semibold">Autres pages</span>
-          <a href="https://formasim.ch/fr/conditions-generales">Conditions générales d'utilisation</a>
+          <a href="https://formasim.ch/fr/conditions-generales"
+            >Conditions générales d'utilisation</a
+          >
           <a href="https://formasim.ch/fr/protection-des-donnees">Protection des données</a>
         </div>
 
@@ -61,13 +65,16 @@ const year = new Date().getFullYear()
     </div>
 
     <!-- Copyright -->
-    <div class="flex flex-col items-center w-full bg-neutral-100">
+    <div class="flex flex-col items-center w-full bg-neutral-100 max-xl:px-8">
       <div class="flex flex-row items-center justify-between w-full py-3 text-sm max-w-7xl">
         <span>
           &copy; 2025 {{ year > 2025 ? `- ${year}` : '' }} Formasim. Tous droits réservés.
         </span>
 
-        <span>Conçu et développé par <a href="https://novadev.ch" class="text-primary">Novadev Sàrl</a></span>
+        <span
+          >Conçu et développé par
+          <a href="https://novadev.ch" class="text-primary">Novadev Sàrl</a></span
+        >
       </div>
     </div>
   </div>

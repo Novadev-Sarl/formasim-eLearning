@@ -9,11 +9,18 @@ import LogoutIcon from '@/assets/icons/logout.svg'
 import LoginIcon from '@/assets/icons/login.svg'
 import FormaSimLogo from '@/assets/icons/formasim.svg'
 
-import { ref } from 'vue'
-import { useWindowSize } from '@vueuse/core'
+import TheMobileMenu from '@/components/TheMobileMenu.vue'
+
+import { computed, ref, watch } from 'vue'
+import { useWindowSize, useBreakpoints, breakpointsTailwind, useAnimate } from '@vueuse/core'
 import { useAuthStore } from '@/stores/auth'
 import { vOnClickOutside } from '@vueuse/components'
 import { useRouter } from 'vue-router'
+
+const breakpoints = useBreakpoints(breakpointsTailwind)
+
+const isDesktop = computed(() => breakpoints.greater('lg').value)
+const { width: windowWidth } = useWindowSize()
 
 const auth = useAuthStore()
 const router = useRouter()
@@ -22,21 +29,76 @@ const profilePanelShown = ref(false)
 const profilePanelRef = ref<HTMLDivElement>()
 const profileButtonRef = ref<HTMLDivElement>()
 
-const { width: windowWidth } = useWindowSize()
-
 const toggleProfilePanel = () => {
   profilePanelShown.value = !profilePanelShown.value
 }
 
-const logout = () => {
-  auth.logout()
-}
+// Prepare burger menu references
+const navigationMenuShown = ref(false)
+const mobileMenuLine1 = ref<HTMLSpanElement>()
+const mobileMenuLine2 = ref<HTMLSpanElement>()
+const mobileMenuLine3 = ref<HTMLSpanElement>()
+
+// create burger menu animations
+const { play: play1, reverse: reverse1 } = useAnimate(
+  mobileMenuLine1,
+  [
+    { transform: 'translateY(-8px)' },
+    { transform: 'translateY(0) rotate(0)' },
+    { transform: 'rotate(45deg)' },
+  ],
+  { duration: 300, fill: 'both', immediate: false },
+)
+
+const { play: play2, reverse: reverse2 } = useAnimate(
+  mobileMenuLine2,
+  [{ opacity: 1 }, { opacity: 0 }, { opacity: 0 }],
+  { duration: 300, fill: 'both', immediate: false },
+)
+
+const { play: play3, reverse: reverse3 } = useAnimate(
+  mobileMenuLine3,
+  [
+    { transform: 'translateY(8px)' },
+    { transform: 'translateY(0) rotate(0)' },
+    { transform: 'rotate(-45deg)' },
+  ],
+  { duration: 300, fill: 'both', immediate: false },
+)
+
+/**
+ * @var {boolean} played - Whether the burger menu has already been played.
+ * This allows to avoid playing the animation twice, while still keeping the animation paused on page load
+ */
+const played = ref(false)
+
+watch(navigationMenuShown, () => {
+  if (!played.value) {
+    play1()
+    play2()
+    play3()
+    played.value = true
+  } else {
+    reverse1()
+    reverse2()
+    reverse3()
+  }
+})
+
+const headerRef = ref<HTMLDivElement>()
+
+const links = [
+  { label: 'Accueil', external: false, to: '/' },
+  { label: 'Mes cours', external: false, to: '/formations' },
+  { label: 'Mon profil', external: false, to: '/profile' },
+  { label: 'Contact', external: true, to: 'https://formasim.ch/fr/contact' },
+]
 </script>
 
 <template>
-  <div class="flex flex-col items-center w-full">
-    <div class="flex flex-row justify-between w-full p-2 max-w-7xl">
-      <!-- Contact section -->
+  <div class="flex flex-col items-center w-full" ref="headerRef">
+    <!-- Contact section -->
+    <div class="flex-row justify-between hidden w-full p-2 xl:flex max-xl:px-8 max-w-7xl">
       <div class="flex flex-row gap-6 text-sm text-neutral-600">
         <span class="flex flex-row items-center gap-4">
           <CallIcon class="text-primary" />
@@ -91,56 +153,47 @@ const logout = () => {
 
     <hr class="w-full h-0.5 border-gray-200" />
 
-    <div class="grid items-center w-full grid-cols-4 p-2 max-w-7xl text-neutral-500">
-      <div class="justify-self-start">
-        <!-- FormaSim logo -->
-        <FormaSimLogo class="my-4 h-14" />
+    <div
+      class="flex flex-row items-center justify-between w-full grid-cols-4 p-2 lg:grid max-xl:px-8 max-xl:py-6 max-w-7xl text-neutral-500"
+    >
+      <!-- FormaSim logo -->
+      <div class="flex justify-self-start">
+        <FormaSimLogo class="h-10 my-2 lg:my-4 lg:h-14" />
       </div>
-      <div class="col-span-2 justify-self-center">
-        <!-- NavBar -->
+
+      <!-- NavBar -->
+      <div class="hidden col-span-2 justify-self-center lg:flex">
         <nav>
           <ul class="flex flex-row gap-12">
-            <li>
-              <RouterLink
-                to="/"
-                class="transition-all hover:text-primary"
-                active-class="font-semibold text-primary"
-              >
-                Accueil
-              </RouterLink>
-            </li>
-            <li>
-              <RouterLink
-                to="/formations"
-                class="transition-all hover:text-primary"
-                active-class="font-semibold text-primary"
-                >Mes cours</RouterLink
-              >
-            </li>
-            <li>
-              <RouterLink
-                to="/profile"
-                class="transition-all hover:text-primary"
-                active-class="font-semibold text-primary"
-              >
-                Mon profil</RouterLink
-              >
-            </li>
-            <li>
+            <li v-for="link in links" :key="link.label">
               <a
-                href="https://formasim.ch/fr/contact"
-                class="flex flex-row items-center gap-2 transition-all hover:text-primary"
+                v-if="link.external"
+                :href="link.to"
                 target="_blank"
+                class="flex flex-row items-center gap-2 transition-all hover:text-primary"
               >
-                Contact
+                <span>
+                  {{ link.label }}
+                </span>
                 <OpenInNewIcon class="size-4" />
               </a>
+              <RouterLink
+                v-else
+                :to="link.to"
+                class="transition-all hover:text-primary"
+                active-class="font-semibold text-primary"
+              >
+                {{ link.label }}
+              </RouterLink>
             </li>
           </ul>
         </nav>
       </div>
-      <div class="flex flex-row items-center gap-6 justify-self-end text-neutral-400">
-        <!-- Profile elements -->
+
+      <!-- Profile elements -->
+      <div
+        class="flex-row items-center hidden gap-6 max-lg:col-start-1 lg:flex lg:justify-self-end text-neutral-400"
+      >
         <template v-if="auth.user">
           <div
             @click="toggleProfilePanel"
@@ -154,18 +207,23 @@ const logout = () => {
               v-show="profilePanelShown"
               ref="profilePanelRef"
               v-on-click-outside="() => (profilePanelShown = false)"
-              class="absolute flex flex-col gap-6 p-4 bg-white shadow-md rounded-xl"
+              class="fixed flex flex-col gap-6 p-4 bg-white shadow-md rounded-xl max-lg:left-4 max-lg:right-4 ring-1 ring-neutral-200 z-[4]"
               :style="
                 profileButtonRef && profilePanelRef
-                  ? {
-                      // Automatically align the profile panel to the right and bottom of the profile button
-                      right:
-                        windowWidth -
-                        profileButtonRef.offsetLeft -
-                        profileButtonRef.clientWidth +
-                        'px',
-                      top: profileButtonRef.offsetTop + profileButtonRef.clientHeight + 10 + 'px',
-                    }
+                  ? isDesktop
+                    ? {
+                        // Automatically align the profile panel to the right and bottom of the profile button
+                        right:
+                          windowWidth -
+                          profileButtonRef.offsetLeft -
+                          profileButtonRef.clientWidth +
+                          'px',
+                        top: profileButtonRef.offsetTop + profileButtonRef.clientHeight + 10 + 'px',
+                      }
+                    : {
+                        // Automatically align the profile panel to the bottom of the profile button
+                        top: profileButtonRef.offsetTop + profileButtonRef.clientHeight + 10 + 'px',
+                      }
                   : {}
               "
             >
@@ -194,7 +252,7 @@ const logout = () => {
               <!-- Card Body -->
               <div class="flex flex-col items-stretch gap-2">
                 <div
-                  @click="logout"
+                  @click="auth.logout"
                   class="flex flex-row items-center gap-2 text-red-500 cursor-pointer"
                 >
                   <LogoutIcon class="size-6" />
@@ -213,6 +271,22 @@ const logout = () => {
           </RouterLink>
         </template>
       </div>
+
+      <!-- Burger menu -->
+      <div class="relative lg:hidden">
+        <button
+          @click.capture.prevent="() => (navigationMenuShown = !navigationMenuShown)"
+          class="relative flex flex-col items-center justify-center transition-colors rounded-md size-8 burger-menu"
+          :class="{ open: navigationMenuShown }"
+          aria-label="Menu"
+        >
+          <span ref="mobileMenuLine1" class="absolute top-1/2 block w-6 h-0.5 bg-black"></span>
+          <span ref="mobileMenuLine2" class="absolute top-1/2 block w-6 h-0.5 bg-black"></span>
+          <span ref="mobileMenuLine3" class="absolute top-1/2 block w-6 h-0.5 bg-black"></span>
+        </button>
+      </div>
+
+      <TheMobileMenu v-model="navigationMenuShown" :links="links" />
     </div>
   </div>
 </template>

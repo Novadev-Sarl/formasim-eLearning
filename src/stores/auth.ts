@@ -27,9 +27,6 @@ export const useAuthStore = defineStore('auth', () => {
    * @returns Whether the login was successful.
    */
   const login = async (email: string, password: string, remember: boolean) => {
-    // first, make sure that the CSRF token is set
-    await axios.get(`${import.meta.env.VITE_API_URL}/sanctum/csrf-cookie`)
-
     const response = await axios.post<{ user: User }>(
       `${import.meta.env.VITE_API_URL}/api/login`,
       {

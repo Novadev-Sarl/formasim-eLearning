@@ -49,10 +49,12 @@ const tabs = [
 </script>
 
 <template>
-  <div class="flex justify-center w-full bg-neutral-50">
-    <div class="flex items-start w-full gap-12 pt-10 max-w-7xl">
+  <div class="flex justify-center w-full p-4 mt-4 bg-neutral-50">
+    <div
+      class="flex flex-col items-stretch w-full gap-12 xl:pt-10 xl:items-start xl:flex-row max-w-7xl"
+    >
       <!-- Profile card -->
-      <aside class="w-1/4 p-6 bg-white rounded-sm shrink-0 ring-1 ring-neutral-100">
+      <aside class="w-full p-6 bg-white rounded-sm xl:w-1/4 shrink-0 ring-1 ring-neutral-100">
         <!-- Profile infos -->
         <div class="flex flex-col items-center gap-4 py-4">
           <!-- Profile picture -->
@@ -98,7 +100,7 @@ const tabs = [
         <!-- Tabs -->
         <div class="py-4">
           <nav>
-            <ul class="flex flex-col gap-5">
+            <ul class="flex flex-col justify-start gap-5 lg:flex-row lg:justify-center xl:flex-col">
               <li v-for="(tab, index) in tabs" :key="tab.label">
                 <button
                   class="flex flex-row items-center gap-2 transition-all duration-300 cursor-pointer hover:text-black/60"
