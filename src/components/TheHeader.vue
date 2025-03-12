@@ -11,7 +11,7 @@ import FormaSimLogo from '@/assets/icons/formasim.svg'
 
 import TheMobileMenu from '@/components/TheMobileMenu.vue'
 
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useWindowSize, useBreakpoints, breakpointsTailwind, useAnimate } from '@vueuse/core'
 import { useAuthStore } from '@/stores/auth'
 import { vOnClickOutside } from '@vueuse/components'
@@ -71,23 +71,28 @@ const { play: play3, reverse: reverse3 } = useAnimate(
  * This allows to avoid playing the animation twice, while still keeping the animation paused on page load
  */
 const played = ref(false)
-const toggleMobileMenu = () => {
-  navigationMenuShown.value = !navigationMenuShown.value
+
+watch(navigationMenuShown, () => {
   if (!played.value) {
-    // The animation should be at least played once, otherwise it will snap to the last frame
     play1()
     play2()
     play3()
     played.value = true
   } else {
-    // The animation should be reversed if it has already been played
     reverse1()
     reverse2()
     reverse3()
   }
-}
+})
 
 const headerRef = ref<HTMLDivElement>()
+
+const links = [
+  { label: 'Accueil', external: false, to: '/' },
+  { label: 'Mes cours', external: false, to: '/formations' },
+  { label: 'Mon profil', external: false, to: '/profile' },
+  { label: 'Contact', external: true, to: 'https://formasim.ch/fr/contact' },
+]
 </script>
 
 <template>
@@ -160,41 +165,26 @@ const headerRef = ref<HTMLDivElement>()
       <div class="hidden col-span-2 justify-self-center lg:flex">
         <nav>
           <ul class="flex flex-row gap-12">
-            <li>
-              <RouterLink
-                to="/"
-                class="transition-all hover:text-primary"
-                active-class="font-semibold text-primary"
-              >
-                Accueil
-              </RouterLink>
-            </li>
-            <li>
-              <RouterLink
-                to="/formations"
-                class="transition-all hover:text-primary"
-                active-class="font-semibold text-primary"
-                >Mes cours</RouterLink
-              >
-            </li>
-            <li>
-              <RouterLink
-                to="/profile"
-                class="transition-all hover:text-primary"
-                active-class="font-semibold text-primary"
-              >
-                Mon profil</RouterLink
-              >
-            </li>
-            <li>
+            <li v-for="link in links" :key="link.label">
               <a
-                href="https://formasim.ch/fr/contact"
-                class="flex flex-row items-center gap-2 transition-all hover:text-primary"
+                v-if="link.external"
+                :href="link.to"
                 target="_blank"
+                class="flex flex-row items-center gap-2 transition-all hover:text-primary"
               >
-                Contact
+                <span>
+                  {{ link.label }}
+                </span>
                 <OpenInNewIcon class="size-4" />
               </a>
+              <RouterLink
+                v-else
+                :to="link.to"
+                class="transition-all hover:text-primary"
+                active-class="font-semibold text-primary"
+              >
+                {{ link.label }}
+              </RouterLink>
             </li>
           </ul>
         </nav>
@@ -285,7 +275,7 @@ const headerRef = ref<HTMLDivElement>()
       <!-- Burger menu -->
       <div class="relative lg:hidden">
         <button
-          @click="toggleMobileMenu"
+          @click.capture.prevent="() => (navigationMenuShown = !navigationMenuShown)"
           class="relative flex flex-col items-center justify-center transition-colors rounded-md size-8 burger-menu"
           :class="{ open: navigationMenuShown }"
           aria-label="Menu"
@@ -296,7 +286,7 @@ const headerRef = ref<HTMLDivElement>()
         </button>
       </div>
 
-      <TheMobileMenu v-model="navigationMenuShown" />
+      <TheMobileMenu v-model="navigationMenuShown" :links="links" />
     </div>
   </div>
 </template>
