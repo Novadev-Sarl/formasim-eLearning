@@ -156,8 +156,8 @@ const links = [
     <div
       class="flex flex-row items-center justify-between w-full grid-cols-4 p-2 lg:grid max-xl:px-8 max-xl:py-6 max-w-7xl text-neutral-500"
     >
+      <!-- FormaSim logo -->
       <div class="flex justify-self-start">
-        <!-- FormaSim logo -->
         <FormaSimLogo class="h-10 my-2 lg:my-4 lg:h-14" />
       </div>
 
@@ -207,7 +207,7 @@ const links = [
               v-show="profilePanelShown"
               ref="profilePanelRef"
               v-on-click-outside="() => (profilePanelShown = false)"
-              class="fixed flex flex-col gap-6 p-4 bg-white shadow-md rounded-xl max-lg:left-4 max-lg:right-4 ring-1 ring-neutral-200"
+              class="fixed flex flex-col gap-6 p-4 bg-white shadow-md rounded-xl max-lg:left-4 max-lg:right-4 ring-1 ring-neutral-200 z-[4]"
               :style="
                 profileButtonRef && profilePanelRef
                   ? isDesktop
