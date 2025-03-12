@@ -13,6 +13,14 @@ const router = createRouter({
     { path: '/formations/:id', component: () => import('@/views/FormationView.vue') },
     { path: '/formations/:id/course', component: () => import('@/views/CourseView.vue') },
   ],
+  // Scroll to the top of the page when the route changes
+  scrollBehavior: () => {
+    return {
+      top: 0,
+      left: 0,
+      behavior: 'smooth',
+    }
+  },
 })
 
 export default router
