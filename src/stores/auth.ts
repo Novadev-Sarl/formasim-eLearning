@@ -60,8 +60,8 @@ export const useAuthStore = defineStore('auth', () => {
     )
   }
 
-  const updateUser = async (input: Partial<User> & { password?: string }) => {
-    const response = await axios.put(`${import.meta.env.VITE_API_URL}/api/user`, input, {
+  const updatePassword = async (input: { password: string; password_confirmation: string }) => {
+    const response = await axios.put(`${import.meta.env.VITE_API_URL}/api/me`, input, {
       withCredentials: true,
       withXSRFToken: true,
     })
@@ -74,5 +74,5 @@ export const useAuthStore = defineStore('auth', () => {
    */
   const isLoggedIn = computed(() => user.value !== null)
 
-  return { user, login, logout, isLoggedIn, updateUser }
+  return { user, login, logout, isLoggedIn, updatePassword }
 })

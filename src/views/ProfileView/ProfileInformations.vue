@@ -47,8 +47,9 @@ const savePassword = async () => {
   passwordInput.value?.setCustomValidity('')
 
   try {
-    await auth.updateUser({
+    await auth.updatePassword({
       password: password.value,
+      password_confirmation: passwordConfirmation.value,
     })
 
     notificationStore.addNotification('Mot de passe mis à jour avec succès', 'success')
