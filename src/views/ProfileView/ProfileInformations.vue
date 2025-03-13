@@ -2,7 +2,7 @@
 import { useAuthStore } from '@/stores/auth'
 import { useNotificationStore } from '@/stores/notification'
 import { AxiosError } from 'axios'
-import { ref } from 'vue'
+import { nextTick, ref } from 'vue'
 
 const auth = useAuthStore()
 const notificationStore = useNotificationStore()
@@ -35,16 +35,20 @@ const savePassword = async () => {
     return
   }
 
+  passwordInput.value.setCustomValidity('')
+  passwordInput.value.reportValidity()
+
+  // Force a reflow by accessing offsetWidth. This ensures the invalid: class is removed
+  void passwordInput.value.offsetWidth
+
   const error = rules.find((rule) => !rule.validator(password.value))
 
   if (error) {
-    passwordInput.value?.setCustomValidity(error.message)
-    passwordInput.value?.reportValidity()
+    passwordInput.value.setCustomValidity(error.message)
+    passwordInput.value.reportValidity()
 
     return
   }
-
-  passwordInput.value?.setCustomValidity('')
 
   try {
     await auth.updatePassword({
@@ -108,7 +112,7 @@ const savePassword = async () => {
         <input
           id="password"
           type="password"
-          class="font-semibold max-md:mb-4"
+          class="font-semibold max-md:mb-4 invalid:outline-red-500 invalid:outline-1 invalid:animate-shake"
           v-model="password"
           minlength="8"
           ref="passwordInput"
@@ -120,7 +124,7 @@ const savePassword = async () => {
         <input
           id="passwordConfirmation"
           type="password"
-          class="font-semibold max-md:mb-4"
+          class="font-semibold max-md:mb-4 invalid:outline-red-500 invalid:outline-1 invalid:animate-shake"
           v-model="passwordConfirmation"
           minlength="8"
           ref="passwordConfirmationInput"
