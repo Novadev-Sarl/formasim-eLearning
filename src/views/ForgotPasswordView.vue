@@ -10,10 +10,12 @@ const notificationStore = useNotificationStore()
 const email = ref('')
 
 const isSending = ref(false)
+const errored = ref(false)
+const sent = ref(false)
 
 const send = async () => {
   isSending.value = true
-
+  errored.value = false
   try {
     await axios.post(
       import.meta.env.VITE_API_URL + '/api/forgot-password',
@@ -29,10 +31,13 @@ const send = async () => {
       'error',
     )
     console.error(err)
+    errored.value = true
     return
   } finally {
     isSending.value = false
   }
+
+  sent.value = true
 
   notificationStore.addNotification(
     "L'e-mail de réinitialisation du mot de passe a été envoyé à votre adresse e-mail.",
@@ -68,11 +73,27 @@ const send = async () => {
         <form @submit.prevent="send" class="flex flex-col gap-4">
           <div class="flex flex-col gap-2">
             <label for="email" class="font-semibold text-neutral-500">Email</label>
-            <input type="text" placeholder="Email" v-model="email" />
+            <input
+              type="text"
+              placeholder="Email"
+              v-model="email"
+              :class="{ 'outline-red-500': errored }"
+            />
           </div>
 
-          <button type="submit" :disabled="isSending" class="self-end text-white action bg-primary">
-            {{ isSending ? 'Envoi en cours...' : 'Réinitialiser le mot de passe &rarr;' }}
+          <button
+            type="submit"
+            :disabled="isSending"
+            :class="{ 'opacity-50': isSending }"
+            class="self-end text-white action bg-primary"
+          >
+            {{
+              isSending
+                ? 'Envoi en cours...'
+                : sent
+                  ? 'E-mail envoyé'
+                  : 'Réinitialiser le mot de passe &rarr;'
+            }}
           </button>
         </form>
       </div>

@@ -5,16 +5,20 @@ import axios, { AxiosError } from 'axios'
 import Logo from '@/assets/icons/formasim.svg'
 import ArrowBackIcon from '@/assets/icons/arrow-back.svg'
 import { useNotificationStore } from '@/stores/notification'
+import { useRouter } from 'vue-router'
 
 const route = useRoute()
+const router = useRouter()
 const notificationStore = useNotificationStore()
 
 const password = ref('')
 const passwordConfirmation = ref('')
 const loading = ref(false)
+const errored = ref(false)
 
 const resetPassword = async () => {
   loading.value = true
+  errored.value = false
 
   try {
     await axios.post(
@@ -33,10 +37,12 @@ const resetPassword = async () => {
     if (err instanceof AxiosError) {
       if (err.status === 422) {
         notificationStore.addNotification(
-          err.response?.data?.message || 'Une erreur est survenue. Veuillez réessayer plus tard.',
+          err.response?.data?.message ||
+            'Une erreur est survenue. Veuillez vérifier vos informations.',
           'error',
         )
         console.error(err.response?.data?.errors)
+        errored.value = true
         return
       }
 
@@ -45,7 +51,7 @@ const resetPassword = async () => {
         'error',
       )
       console.error(err.response?.data?.message)
-
+      errored.value = true
       return
     }
 
@@ -53,6 +59,7 @@ const resetPassword = async () => {
       'Une erreur est survenue. Veuillez réessayer plus tard.',
       'error',
     )
+    errored.value = true
     console.error(err)
   } finally {
     loading.value = false
@@ -62,6 +69,8 @@ const resetPassword = async () => {
     'Le mot de passe a été réinitialisé avec succès. Vous pouvez maintenant vous connecter.',
     'success',
   )
+
+  router.push('/login')
 }
 </script>
 
@@ -95,7 +104,12 @@ const resetPassword = async () => {
             <label for="password" class="font-semibold text-neutral-500"
               >Nouveau mot de passe</label
             >
-            <input type="password" placeholder="Nouveau mot de passe" v-model="password" />
+            <input
+              type="password"
+              placeholder="Nouveau mot de passe"
+              v-model="password"
+              :class="{ 'outline-red-500': errored }"
+            />
           </div>
 
           <div class="flex flex-col gap-2">
@@ -106,10 +120,16 @@ const resetPassword = async () => {
               type="password"
               placeholder="Confirmation du mot de passe"
               v-model="passwordConfirmation"
+              :class="{ 'outline-red-500': errored }"
             />
           </div>
 
-          <button type="submit" :disabled="loading" class="self-end text-white action bg-primary">
+          <button
+            type="submit"
+            :disabled="loading"
+            :class="{ 'opacity-50': loading }"
+            class="self-end text-white action bg-primary"
+          >
             {{ loading ? 'Réinitialisation en cours...' : 'Réinitialiser le mot de passe &rarr;' }}
           </button>
         </form>

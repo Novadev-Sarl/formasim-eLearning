@@ -13,6 +13,7 @@ const auth = useAuthStore()
 const notificationStore = useNotificationStore()
 const router = useRouter()
 const route = useRoute()
+const errored = ref(false)
 
 watchEffect(() => {
   if (auth.isLoggedIn) {
@@ -30,12 +31,14 @@ const login = async () => {
   if (isLoggingIn.value) return
 
   isLoggingIn.value = true
+  errored.value = false
   try {
     await auth.login(email.value, password.value, remember.value)
   } catch (error) {
     if (error instanceof AxiosError) {
       if (error.response?.status === 401) {
         notificationStore.addNotification('Email ou mot de passe incorrect', 'error')
+        errored.value = true
         return
       }
 
@@ -44,6 +47,7 @@ const login = async () => {
           'Veuillez vérifier vos informations de connexion',
           'error',
         )
+        errored.value = true
         return
       }
 
@@ -108,6 +112,7 @@ const login = async () => {
               v-model="email"
               class="w-full"
               placeholder="Entrez votre email"
+              :class="{ 'outline-red-500 outline-1 animate-shake': errored }"
             />
           </div>
 
@@ -119,6 +124,7 @@ const login = async () => {
               v-model="password"
               class="w-full"
               placeholder="Entrez votre mot de passe"
+              :class="{ 'outline-red-500 outline-1 animate-shake': errored }"
             />
           </div>
 
