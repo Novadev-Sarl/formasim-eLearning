@@ -16,6 +16,8 @@ axios.defaults.withCredentials = true
 // To fix this, we need to set the `withXSRFToken` option to `true`.
 axios.defaults.withXSRFToken = true
 
+axios.defaults.baseURL = import.meta.env.VITE_API_URL
+
 app.use(createPinia())
 app.use(router)
 
