@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { useFormationsStore } from '@/stores/formations'
+import { useFormationsStore, useFormationCategoriesStore } from '@/stores/formations'
 import { useAuthStore } from '@/stores/auth'
 import { useRoute, useRouter } from 'vue-router'
+import { useFuse } from '@vueuse/integrations/useFuse'
 
 import { ProgressSpinner } from 'primevue'
 
@@ -14,9 +15,13 @@ import FormatListNumberedIcon from '@/assets/icons/format-list-numbered.svg'
 import ScheduleIcon from '@/assets/icons/schedule.svg'
 import ArrowForwardIcon from '@/assets/icons/arrow-forward.svg'
 
-import { ref, reactive } from 'vue'
+import { ref, reactive, computed } from 'vue'
+import type { Formation } from '@/models/formation'
+import { formatDuration } from '@/utils/time'
 
 const formationsStore = useFormationsStore()
+const formationCategoriesStore = useFormationCategoriesStore()
+
 const authStore = useAuthStore()
 const route = useRoute()
 const router = useRouter()
@@ -26,6 +31,8 @@ const view = ref<'grid' | 'list'>('grid')
 if (!authStore.isLoggedIn) {
   router.replace(`/login?redirect=${route.path}`)
 }
+
+const search = ref('')
 
 const filters = reactive({
   category: [] as number[],
@@ -40,6 +47,39 @@ const resetFilters = () => {
   filters.lessThan60Min = false
   filters.lessThan30Min = false
 }
+
+const filteredFormations = computed(() => {
+  let formations = formationsStore.formations
+
+  if (filters.category.length > 0) {
+    formations = formations.filter((formation: Formation) => {
+      return (
+        formation.formation_category && filters.category.includes(formation.formation_category.id)
+      )
+    })
+  }
+
+  if (filters.lessThan60Min) {
+    formations = formations.filter((formation: Formation) => {
+      return formation.duration < 60
+    })
+  }
+
+  if (filters.lessThan30Min) {
+    formations = formations.filter((formation: Formation) => {
+      return formation.duration < 30
+    })
+  }
+
+  // TODO: Add certificate filter
+
+  return formations
+})
+
+const { results } = useFuse(search, filteredFormations, {
+  matchAllWhenSearchEmpty: true,
+  fuseOptions: { keys: ['name', 'description'] },
+})
 </script>
 
 <template>
@@ -83,8 +123,12 @@ const resetFilters = () => {
           </div>
           <div class="flex flex-row gap-2">
             <div class="relative w-full">
-              <!-- TODO: Add search input -->
-              <input type="text" placeholder="Rechercher un cours..." class="w-full pl-10" />
+              <input
+                type="text"
+                v-model="search"
+                placeholder="Rechercher un cours..."
+                class="w-full pl-10"
+              />
               <span
                 class="absolute inset-y-0 left-0 flex items-center pl-2 pointer-events-none text-primary"
               >
@@ -95,19 +139,19 @@ const resetFilters = () => {
         </div>
 
         <!-- Content -->
-        <template v-if="formationsStore.formations.length > 0">
+        <template v-if="filteredFormations.length > 0">
           <div
             v-if="view === 'grid'"
             class="grid grid-cols-1 gap-4 p-4 lg:grid-cols-2 xl:grid-cols-3"
           >
             <CourseCard
-              v-for="formation in formationsStore.formations"
-              :key="formation.id"
-              :formation="formation"
+              v-for="formation in results"
+              :key="formation.item.id"
+              :formation="formation.item"
             >
               <template #footer>
                 <RouterLink
-                  :to="`/formations/${formation.id}`"
+                  :to="`/formations/${formation.item.id}`"
                   class="py-3 font-semibold text-center bg-white border action border-primary text-primary hover:bg-primary hover:text-white"
                 >
                   Démarrer le cours
@@ -118,13 +162,13 @@ const resetFilters = () => {
 
           <div v-else class="flex flex-col gap-4 p-4">
             <RouterLink
-              v-for="formation in formationsStore.formations"
-              :key="formation.id"
-              :to="`/formations/${formation.id}`"
+              v-for="formation in results"
+              :key="formation.item.id"
+              :to="`/formations/${formation.item.id}`"
               class="flex flex-row items-center justify-between gap-4 p-4 bg-white rounded-sm cursor-pointer ring-1 ring-gray-200 group"
             >
               <div class="flex flex-col gap-2">
-                <h3 class="text-lg font-semibold">{{ formation.name }}</h3>
+                <h3 class="text-lg font-semibold">{{ formation.item.name }}</h3>
                 <div class="flex flex-row gap-2">
                   <div class="flex flex-row gap-2">
                     <FormatListNumberedIcon class="size-6 text-primary" />
@@ -133,7 +177,9 @@ const resetFilters = () => {
 
                   <div class="flex flex-row gap-2 mr-5">
                     <ScheduleIcon class="size-6 text-primary" />
-                    <span class="text-neutral-600">3h30</span>
+                    <span class="text-neutral-600">{{
+                      formatDuration(formation.item.duration)
+                    }}</span>
                   </div>
                 </div>
               </div>
@@ -157,7 +203,6 @@ const resetFilters = () => {
         </div>
       </div>
 
-      <!-- TODO: Add filters functionnality -->
       <aside class="flex flex-col gap-4 max-md:px-8 max-xl:md:pr-8 min-w-xs">
         <!-- Filter header -->
         <div class="flex flex-row items-center justify-between py-4 h-[96px]">
@@ -175,22 +220,23 @@ const resetFilters = () => {
         <div class="flex flex-col gap-2 p-6 bg-white rounded-sm ring-1 ring-gray-200">
           <span class="text-sm font-semibold">Catégorie du cours</span>
           <ul class="flex flex-col gap-4 py-2">
-            <!-- TODO: Add dynamic categories -->
-            <li v-for="i in 10" :key="i" class="flex flex-row items-center gap-2">
+            <li
+              v-for="formationCategory in formationCategoriesStore.formationCategories"
+              :key="formationCategory.id"
+              class="flex flex-row items-center gap-2"
+            >
               <input
                 type="checkbox"
-                :id="`formation-${i}`"
+                :id="`formation-${formationCategory.id}`"
                 class="w-4 h-4 accent-primary"
-                :checked="filters.category.includes(i)"
-                @change="
-                  (newVal) =>
-                    newVal
-                      ? filters.category.push(i)
-                      : filters.category.splice(filters.category.indexOf(i), 1)
-                "
+                v-model="filters.category"
+                :value="formationCategory.id"
               />
-              <label :for="`formation-${i}`" class="text-sm cursor-pointer text-neutral-500">
-                <span>Formation {{ i }}</span>
+              <label
+                :for="`formation-${formationCategory.id}`"
+                class="text-sm cursor-pointer text-neutral-500"
+              >
+                <span>{{ formationCategory.name }}</span>
               </label>
             </li>
           </ul>

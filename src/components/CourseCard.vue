@@ -2,6 +2,7 @@
 import FormatListNumberedIcon from '@/assets/icons/format-list-numbered.svg'
 import ScheduleIcon from '@/assets/icons/schedule.svg'
 import type { Formation } from '@/models/formation'
+import { formatDuration } from '@/utils/time'
 
 defineProps<{
   formation: Formation
@@ -28,7 +29,7 @@ defineProps<{
 
           <div class="flex flex-row gap-2 mr-5">
             <ScheduleIcon class="size-6 text-primary" />
-            <span class="text-neutral-600">3h30</span>
+            <span class="text-neutral-600">{{ formatDuration(formation.duration) }}</span>
           </div>
         </div>
 

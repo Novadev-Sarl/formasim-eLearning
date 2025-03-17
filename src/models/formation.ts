@@ -1,6 +1,11 @@
 export type Formation = {
-  id: string
+  id: number
   name: string
   description: string
   image: string
+  duration: number
+  formation_category?: {
+    id: number
+    name: string
+  }
 }
