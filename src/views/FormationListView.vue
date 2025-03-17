@@ -95,54 +95,65 @@ const resetFilters = () => {
         </div>
 
         <!-- Content -->
-        <div
-          v-if="view === 'grid'"
-          class="grid grid-cols-1 gap-4 p-4 lg:grid-cols-2 xl:grid-cols-3"
-        >
-          <CourseCard
-            v-for="formation in formationsStore.formations"
-            :key="formation.id"
-            :formation="formation"
+        <template v-if="formationsStore.formations.length > 0">
+          <div
+            v-if="view === 'grid'"
+            class="grid grid-cols-1 gap-4 p-4 lg:grid-cols-2 xl:grid-cols-3"
           >
-            <template #footer>
-              <RouterLink
-                :to="`/formations/${formation.id}`"
-                class="py-3 font-semibold text-center bg-white border action border-primary text-primary hover:bg-primary hover:text-white"
-              >
-                Démarrer le cours
-              </RouterLink>
-            </template>
-          </CourseCard>
-        </div>
+            <CourseCard
+              v-for="formation in formationsStore.formations"
+              :key="formation.id"
+              :formation="formation"
+            >
+              <template #footer>
+                <RouterLink
+                  :to="`/formations/${formation.id}`"
+                  class="py-3 font-semibold text-center bg-white border action border-primary text-primary hover:bg-primary hover:text-white"
+                >
+                  Démarrer le cours
+                </RouterLink>
+              </template>
+            </CourseCard>
+          </div>
 
-        <div v-else class="flex flex-col gap-4 p-4">
-          <RouterLink
-            v-for="formation in formationsStore.formations"
-            :key="formation.id"
-            :to="`/formations/${formation.id}`"
-            class="flex flex-row items-center justify-between gap-4 p-4 bg-white rounded-sm cursor-pointer ring-1 ring-gray-200 group"
-          >
-            <div class="flex flex-col gap-2">
-              <h3 class="text-lg font-semibold">{{ formation.name }}</h3>
-              <div class="flex flex-row gap-2">
+          <div v-else class="flex flex-col gap-4 p-4">
+            <RouterLink
+              v-for="formation in formationsStore.formations"
+              :key="formation.id"
+              :to="`/formations/${formation.id}`"
+              class="flex flex-row items-center justify-between gap-4 p-4 bg-white rounded-sm cursor-pointer ring-1 ring-gray-200 group"
+            >
+              <div class="flex flex-col gap-2">
+                <h3 class="text-lg font-semibold">{{ formation.name }}</h3>
                 <div class="flex flex-row gap-2">
-                  <FormatListNumberedIcon class="size-6 text-primary" />
-                  <span class="text-neutral-600">10 chapitres</span>
-                </div>
+                  <div class="flex flex-row gap-2">
+                    <FormatListNumberedIcon class="size-6 text-primary" />
+                    <span class="text-neutral-600">10 chapitres</span>
+                  </div>
 
-                <div class="flex flex-row gap-2 mr-5">
-                  <ScheduleIcon class="size-6 text-primary" />
-                  <span class="text-neutral-600">3h30</span>
+                  <div class="flex flex-row gap-2 mr-5">
+                    <ScheduleIcon class="size-6 text-primary" />
+                    <span class="text-neutral-600">3h30</span>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <button
-              class="flex items-center justify-center p-2 transition-colors bg-white border rounded-sm size-12 border-primary text-primary group-hover:bg-primary group-hover:text-white"
-            >
-              <ArrowForwardIcon class="size-6" />
-            </button>
-          </RouterLink>
+              <button
+                class="flex items-center justify-center p-2 transition-colors bg-white border rounded-sm size-12 border-primary text-primary group-hover:bg-primary group-hover:text-white"
+              >
+                <ArrowForwardIcon class="size-6" />
+              </button>
+            </RouterLink>
+          </div>
+        </template>
+
+        <div v-else class="flex flex-col gap-4 p-4">
+          <div class="flex flex-col gap-2">
+            <h3 class="text-lg font-semibold">Aucune formation trouvée</h3>
+            <p class="text-neutral-600">
+              Veuillez modifier vos filtres pour trouver une formation correspondante.
+            </p>
+          </div>
         </div>
       </div>
 
