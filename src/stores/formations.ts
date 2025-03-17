@@ -1,15 +1,49 @@
-import type { Formation } from '@/models/formation'
-import { useAxios } from '@vueuse/integrations/useAxios'
+import type { Formation, FormationCategory } from '@/models/formation'
+import axios from 'axios'
 import { defineStore } from 'pinia'
+import { ref } from 'vue'
 
 export const useFormationsStore = defineStore('formations', () => {
-  const { data: formations, isFinished: ready } = useAxios<Formation[]>('/api/formations')
+  const formations = ref<Formation[] | null>(null)
 
-  return { formations, ready }
+  const get = async () => {
+    if (formations.value) return formations.value
+
+    const { data } = await axios.get<Formation[]>('/api/formations')
+    formations.value = data
+
+    return data
+  }
+
+  return { get }
 })
 
 export const useFormationCategoriesStore = defineStore('formationCategories', () => {
-  const { data: formationCategories, isFinished: ready } = useAxios('/api/formation-categories')
+  const formationCategories = ref<FormationCategory[] | null>(null)
 
-  return { formationCategories, ready }
+  const get = async () => {
+    if (formationCategories.value) return formationCategories.value
+
+    const { data } = await axios.get<FormationCategory[]>('/api/formation-categories')
+    formationCategories.value = data
+
+    return data
+  }
+
+  return { get }
+})
+
+export const useFormationStore = defineStore('formation', () => {
+  const formation = ref<Formation | null>(null)
+
+  const get = async (id: number) => {
+    if (formation.value) return formation.value
+
+    const { data } = await axios.get<Formation>(`/api/formations/${id}`)
+    formation.value = data
+
+    return data
+  }
+
+  return { get }
 })

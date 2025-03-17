@@ -7,6 +7,7 @@ import TheHeader from '@/components/TheHeader.vue'
 import TheFooter from '@/components/TheFooter.vue'
 import ToastNotification from '@/components/ToastNotification.vue'
 import { useNotificationStore } from '@/stores/notification'
+import { useElementSize } from '@vueuse/core'
 
 const route = useRoute()
 const notificationStore = useNotificationStore()
@@ -14,6 +15,7 @@ const fullscreenRoutes = ['/login', '/reset-password', '/forgot-password']
 
 const isFullscreenRoute = computed(() => fullscreenRoutes.includes(route.path))
 const header = ref<HTMLElement | null>(null)
+const { height: headerHeight } = useElementSize(header)
 
 axios.get(import.meta.env.VITE_API_URL + '/sanctum/csrf-cookie', {
   withCredentials: true,
@@ -31,7 +33,7 @@ axios.get(import.meta.env.VITE_API_URL + '/sanctum/csrf-cookie', {
   </header>
 
   <RouterView
-    :style="{ paddingTop: isFullscreenRoute ? '0px' : `${header?.clientHeight}px` }"
+    :style="{ paddingTop: isFullscreenRoute ? '0px' : `${headerHeight}px` }"
     class="min-h-screen"
     :class="{ 'pb-16': !isFullscreenRoute }"
   />

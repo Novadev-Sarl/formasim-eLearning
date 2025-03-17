@@ -2,7 +2,6 @@
 import { useFormationsStore, useFormationCategoriesStore } from '@/stores/formations'
 import { useAuthStore } from '@/stores/auth'
 import { useRoute, useRouter } from 'vue-router'
-import { useFuse } from '@vueuse/integrations/useFuse'
 
 import { ProgressSpinner } from 'primevue'
 
@@ -16,8 +15,9 @@ import ScheduleIcon from '@/assets/icons/schedule.svg'
 import ArrowForwardIcon from '@/assets/icons/arrow-forward.svg'
 
 import { ref, reactive, computed } from 'vue'
-import type { Formation } from '@/models/formation'
+import type { Formation, FormationCategory } from '@/models/formation'
 import { formatDuration } from '@/utils/time'
+import Fuse from 'fuse.js'
 
 const formationsStore = useFormationsStore()
 const formationCategoriesStore = useFormationCategoriesStore()
@@ -48,11 +48,20 @@ const resetFilters = () => {
   filters.lessThan30Min = false
 }
 
-const filteredFormations = computed(() => {
-  let formations = formationsStore.formations
+const formations = ref<Formation[]>([])
+const formationCategories = ref<FormationCategory[]>([])
 
+const loading = ref(true)
+Promise.all([formationsStore.get(), formationCategoriesStore.get()]).then(([res, res2]) => {
+  formations.value = res
+  formationCategories.value = res2
+  loading.value = false
+})
+
+const filteredFormations = computed(() => {
+  let initialFormations = formations.value
   if (filters.category.length > 0) {
-    formations = formations.filter((formation: Formation) => {
+    initialFormations = initialFormations.filter((formation: Formation) => {
       return (
         formation.formation_category && filters.category.includes(formation.formation_category.id)
       )
@@ -60,31 +69,31 @@ const filteredFormations = computed(() => {
   }
 
   if (filters.lessThan60Min) {
-    formations = formations.filter((formation: Formation) => {
+    initialFormations = initialFormations.filter((formation: Formation) => {
       return formation.duration < 60
     })
   }
 
   if (filters.lessThan30Min) {
-    formations = formations.filter((formation: Formation) => {
+    initialFormations = initialFormations.filter((formation: Formation) => {
       return formation.duration < 30
     })
   }
 
+  if (search.value) {
+    const fuse = new Fuse(initialFormations, { keys: ['name', 'description'] })
+    initialFormations = fuse.search(search.value).map((result) => result.item)
+  }
+
   // TODO: Add certificate filter
 
-  return formations
-})
-
-const { results } = useFuse(search, filteredFormations, {
-  matchAllWhenSearchEmpty: true,
-  fuseOptions: { keys: ['name', 'description'] },
+  return initialFormations
 })
 </script>
 
 <template>
   <main class="flex flex-row justify-center mt-4">
-    <div class="flex items-center justify-center w-full grow" v-if="!formationsStore.ready">
+    <div class="flex items-center justify-center w-full grow" v-if="loading">
       <ProgressSpinner style="stroke: var(--color-primary)" />
     </div>
 
@@ -119,7 +128,7 @@ const { results } = useFuse(search, filteredFormations, {
                 <ListIcon />
               </button>
             </div>
-            <span>Affichage de {{ formationsStore.formations.length }} résultats</span>
+            <span>Affichage de {{ filteredFormations.length }} résultats</span>
           </div>
           <div class="flex flex-row gap-2">
             <div class="relative w-full">
@@ -145,13 +154,13 @@ const { results } = useFuse(search, filteredFormations, {
             class="grid grid-cols-1 gap-4 p-4 lg:grid-cols-2 xl:grid-cols-3"
           >
             <CourseCard
-              v-for="formation in results"
-              :key="formation.item.id"
-              :formation="formation.item"
+              v-for="formation in filteredFormations"
+              :key="formation.id"
+              :formation="formation"
             >
               <template #footer>
                 <RouterLink
-                  :to="`/formations/${formation.item.id}`"
+                  :to="`/formations/${formation.id}`"
                   class="py-3 font-semibold text-center bg-white border action border-primary text-primary hover:bg-primary hover:text-white"
                 >
                   Démarrer le cours
@@ -162,13 +171,13 @@ const { results } = useFuse(search, filteredFormations, {
 
           <div v-else class="flex flex-col gap-4 p-4">
             <RouterLink
-              v-for="formation in results"
-              :key="formation.item.id"
-              :to="`/formations/${formation.item.id}`"
+              v-for="formation in filteredFormations"
+              :key="formation.id"
+              :to="`/formations/${formation.id}`"
               class="flex flex-row items-center justify-between gap-4 p-4 bg-white rounded-sm cursor-pointer ring-1 ring-gray-200 group"
             >
               <div class="flex flex-col gap-2">
-                <h3 class="text-lg font-semibold">{{ formation.item.name }}</h3>
+                <h3 class="text-lg font-semibold">{{ formation.name }}</h3>
                 <div class="flex flex-row gap-2">
                   <div class="flex flex-row gap-2">
                     <FormatListNumberedIcon class="size-6 text-primary" />
@@ -177,9 +186,7 @@ const { results } = useFuse(search, filteredFormations, {
 
                   <div class="flex flex-row gap-2 mr-5">
                     <ScheduleIcon class="size-6 text-primary" />
-                    <span class="text-neutral-600">{{
-                      formatDuration(formation.item.duration)
-                    }}</span>
+                    <span class="text-neutral-600">{{ formatDuration(formation.duration) }}</span>
                   </div>
                 </div>
               </div>
@@ -221,7 +228,7 @@ const { results } = useFuse(search, filteredFormations, {
           <span class="text-sm font-semibold">Catégorie du cours</span>
           <ul class="flex flex-col gap-4 py-2">
             <li
-              v-for="formationCategory in formationCategoriesStore.formationCategories"
+              v-for="formationCategory in formationCategories"
               :key="formationCategory.id"
               class="flex flex-row items-center gap-2"
             >
