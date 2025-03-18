@@ -1,10 +1,14 @@
 <script setup lang="ts">
 import CourseCard from '@/components/CourseCard.vue'
+import { useAxios } from '@vueuse/integrations/useAxios'
+import type { Formation } from '@/models/formation'
 import { ref } from 'vue'
 
 const activeTab = ref(0)
 
 const tabs = ['Cours actifs', 'Cours terminés']
+
+const { data: formations } = useAxios<Formation[]>('/api/formations')
 </script>
 
 <template>
@@ -30,7 +34,7 @@ const tabs = ['Cours actifs', 'Cours terminés']
 
       <div class="flex flex-col grid-cols-3 gap-4 md:grid">
         <!-- TODO: Add a link to the course -->
-        <CourseCard v-for="i in 10" :key="i">
+        <CourseCard v-for="formation in formations" :key="formation.id" :formation="formation">
           <template #footer>
             <!-- TODO: Add a link to the quizz -->
             <button class="transition cursor-pointer size-fit text-primary hover:text-primary-600">
