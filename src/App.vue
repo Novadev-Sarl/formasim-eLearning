@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { RouterView, useRoute } from 'vue-router'
 import { computed, ref } from 'vue'
-import axios from 'axios'
 
 import TheHeader from '@/components/TheHeader.vue'
 import TheFooter from '@/components/TheFooter.vue'
@@ -16,11 +15,6 @@ const fullscreenRoutes = ['/login', '/reset-password', '/forgot-password']
 const isFullscreenRoute = computed(() => fullscreenRoutes.includes(route.path))
 const header = ref<HTMLElement | null>(null)
 const { height: headerHeight } = useElementSize(header)
-
-axios.get(import.meta.env.VITE_API_URL + '/sanctum/csrf-cookie', {
-  withCredentials: true,
-  withXSRFToken: true,
-})
 </script>
 
 <template>

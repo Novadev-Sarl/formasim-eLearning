@@ -1,7 +1,5 @@
 <script setup lang="ts">
 import { useFormationsStore, useFormationCategoriesStore } from '@/stores/formations'
-import { useAuthStore } from '@/stores/auth'
-import { useRoute, useRouter } from 'vue-router'
 
 import { ProgressSpinner } from 'primevue'
 
@@ -22,15 +20,7 @@ import Fuse from 'fuse.js'
 const formationsStore = useFormationsStore()
 const formationCategoriesStore = useFormationCategoriesStore()
 
-const authStore = useAuthStore()
-const route = useRoute()
-const router = useRouter()
-
 const view = ref<'grid' | 'list'>('grid')
-
-if (!authStore.isLoggedIn) {
-  router.replace(`/login?redirect=${route.path}`)
-}
 
 const search = ref('')
 

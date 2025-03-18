@@ -2,7 +2,7 @@
 import { useAuthStore } from '@/stores/auth'
 import { useNotificationStore } from '@/stores/notification'
 import { AxiosError } from 'axios'
-import { nextTick, ref } from 'vue'
+import { ref } from 'vue'
 
 const auth = useAuthStore()
 const notificationStore = useNotificationStore()

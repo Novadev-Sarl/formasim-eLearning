@@ -3,7 +3,6 @@ import { useLocalStorage } from '@vueuse/core'
 import { destr } from 'destr'
 import { defineStore } from 'pinia'
 import axios from 'axios'
-import { computed } from 'vue'
 
 export const useAuthStore = defineStore('auth', () => {
   /**
@@ -61,18 +60,11 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   const updatePassword = async (input: { password: string; password_confirmation: string }) => {
-    const response = await axios.put(`${import.meta.env.VITE_API_URL}/api/me`, input, {
+    await axios.put(`${import.meta.env.VITE_API_URL}/api/me`, input, {
       withCredentials: true,
       withXSRFToken: true,
     })
-
-    user.value = response.data.user
   }
 
-  /**
-   * Whether the user is logged in.
-   */
-  const isLoggedIn = computed(() => user.value !== null)
-
-  return { user, login, logout, isLoggedIn, updatePassword }
+  return { user, login, logout, updatePassword }
 })
