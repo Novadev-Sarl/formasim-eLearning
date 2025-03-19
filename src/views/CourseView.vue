@@ -12,32 +12,71 @@ import { useRoute } from 'vue-router'
 import { useFormationStore } from '@/stores/formations'
 import { formatDuration } from '@/utils/time'
 import axios from 'axios'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
+import type { FormationQuestion } from '@/models/formation'
+import { useNotificationStore } from '@/stores/notification'
 
 const route = useRoute()
 const formationID = route.params.id
 
+const notificationStore = useNotificationStore()
 const formationStore = useFormationStore()
 const formation = await formationStore.get(+formationID)
 
-const { data: question } = await axios.get(`/api/formations/${formationID}/question`)
+const question = ref(
+  (await axios.get<FormationQuestion>(`/api/formations/${formationID}/question`)).data,
+)
 
 const answer = ref<string | null>(null)
+const spentTime = ref<number>(formation.formation_user.spent_time)
 
 const loadingAnswer = ref(false)
-const nextQuestion = async () => {
+const answerData = ref<{
+  trueAnswer: string
+  newQuestion: FormationQuestion
+} | null>(null)
+const submit = async () => {
   loadingAnswer.value = true
 
   try {
-    await axios.post(`/api/formations/${formationID}/question`, {
+    const { data } = await axios.post<{
+      trueAnswer: string | boolean
+      newQuestion: FormationQuestion
+      spentTime: number
+    }>(`/api/formations/${formationID}/answer`, {
       answer: answer.value,
     })
+
+    answerData.value = {
+      trueAnswer: `${data.trueAnswer}`,
+      newQuestion: data.newQuestion,
+    }
+    spentTime.value = data.spentTime
   } catch (error) {
+    notificationStore.addNotification(
+      'Une erreur est survenue lors de la vérification de la réponse',
+      'error',
+    )
     console.error(error)
   } finally {
     loadingAnswer.value = false
   }
 }
+
+const nextQuestion = () => {
+  if (!answerData.value) {
+    console.warn('No answer data')
+    return
+  }
+  question.value = answerData.value.newQuestion
+  answer.value = null
+  answerData.value = null
+}
+
+const remainingTime = computed(() => {
+  const remainingTime = formation.duration - spentTime.value / 60
+  return remainingTime > 0 ? remainingTime : 0
+})
 </script>
 
 <template>
@@ -70,7 +109,7 @@ const nextQuestion = async () => {
             </div>
             <div class="flex flex-row items-center gap-2">
               <ScheduleIcon class="size-6 text-primary" />
-              <span class="text-gray-600">{{ formatDuration(formation.duration) }} restantes</span>
+              <span class="text-gray-600">{{ formatDuration(remainingTime) }} restantes</span>
             </div>
           </div>
         </div>
@@ -86,8 +125,23 @@ const nextQuestion = async () => {
         <template v-if="question.type === 'true_false'">
           <div class="flex flex-col gap-4">
             <div
-              class="transition flex flex-row gap-2 bg-neutral-100 ring-neutral-200 ring-1 has-checked:bg-primary/10 has-checked:ring-primary py-2 px-4 rounded-md items-center cursor-pointer"
-              @click="answer = 'true'"
+              class="transition flex flex-row gap-2 ring-1 py-2 px-4 rounded-md items-center"
+              :class="{
+                // Answer not validated
+                'bg-neutral-100 ring-neutral-200 cursor-pointer has-checked:bg-primary/10 has-checked:ring-primary':
+                  answerData === null,
+                // Answer validated, choice correct
+                'bg-primary/10 ring-primary': answerData?.trueAnswer === 'true',
+                // Answer validated, incorrect choice
+                'bg-neutral-100 ring-neutral-200 has-checked:bg-red-100 has-checked:ring-red-500':
+                  answerData?.trueAnswer === 'false',
+              }"
+              @click="
+                () => {
+                  if (loadingAnswer || answerData !== null) return
+                  answer = 'true'
+                }
+              "
             >
               <input
                 type="radio"
@@ -95,13 +149,29 @@ const nextQuestion = async () => {
                 id="answer-true"
                 class="accent-primary"
                 :checked="answer === 'true'"
+                :disabled="loadingAnswer || answerData !== null"
               />
               <label for="answer-true">Vrai</label>
             </div>
 
             <div
-              class="transition flex flex-row gap-2 bg-neutral-100 ring-neutral-200 ring-1 has-checked:bg-primary/10 has-checked:ring-primary py-2 px-4 rounded-md items-center cursor-pointer"
-              @click="answer = 'false'"
+              class="transition flex flex-row gap-2 ring-1 py-2 px-4 rounded-md items-center"
+              :class="{
+                // Answer not validated
+                'bg-neutral-100 ring-neutral-200 cursor-pointer has-checked:bg-primary/10 has-checked:ring-primary':
+                  answerData === null,
+                // Answer validated, choice correct
+                'bg-primary/10 ring-primary': answerData?.trueAnswer === 'false',
+                // Answer validated, incorrect choice
+                'bg-neutral-100 ring-neutral-200 has-checked:bg-red-100 has-checked:ring-red-500':
+                  answerData?.trueAnswer === 'true',
+              }"
+              @click="
+                () => {
+                  if (loadingAnswer || answerData !== null) return
+                  answer = 'false'
+                }
+              "
             >
               <input
                 type="radio"
@@ -109,6 +179,7 @@ const nextQuestion = async () => {
                 id="answer-false"
                 class="accent-primary"
                 :checked="answer === 'false'"
+                :disabled="loadingAnswer || answerData !== null"
               />
               <label for="answer-false">Faux</label>
             </div>
@@ -117,18 +188,50 @@ const nextQuestion = async () => {
 
         <template v-else-if="question.type === 'open'">
           <div class="flex flex-col gap-4">
-            <div class="flex flex-col gap-2"></div>
+            <div class="flex flex-col gap-2">
+              <input
+                type="text"
+                id="answer"
+                v-model="answer"
+                class="w-full"
+                placeholder="Entrez votre réponse"
+                :disabled="loadingAnswer || answerData !== null"
+              />
+            </div>
           </div>
         </template>
 
         <template v-else-if="question.type === 'select'">
           <div
-            v-for="option in question.options"
-            :key="option.id"
-            class="transition flex flex-row gap-2 bg-neutral-100 ring-neutral-200 ring-1 has-checked:bg-primary/10 has-checked:ring-primary py-2 px-4 rounded-md items-center cursor-pointer"
+            v-for="(option, index) in question.options"
+            :key="index"
+            class="transition flex flex-row gap-2 ring-1 py-2 px-4 rounded-md items-center"
+            :class="{
+              // Answer not validated
+              'bg-neutral-100 ring-neutral-200 has-checked:bg-primary/10 has-checked:ring-primary cursor-pointer':
+                answerData === null,
+              // answer validated, choice correct
+              'bg-primary/10 ring-primary': answerData?.trueAnswer === option,
+              // answer validated, incorrect choice
+              'bg-neutral-100 ring-neutral-200 has-checked:bg-red-100 has-checked:ring-red-500':
+                answerData?.trueAnswer !== option && answerData !== null,
+            }"
+            @click="
+              () => {
+                if (loadingAnswer || answerData !== null) return
+                answer = option
+              }
+            "
           >
-            <input type="radio" name="answer" :id="`answer-${option.id}`" class="accent-primary" />
-            <label :for="`answer-${option.id}`">{{ option.option }}</label>
+            <input
+              type="radio"
+              name="answer"
+              :id="`answer-${index}`"
+              class="accent-primary"
+              :checked="answer === option"
+              :disabled="loadingAnswer || answerData !== null"
+            />
+            <label :for="`answer-${index}`">{{ option }}</label>
           </div>
         </template>
       </div>
@@ -140,15 +243,22 @@ const nextQuestion = async () => {
             'opacity-50 cursor-not-allowed': loadingAnswer,
             'opacity-100 cursor-pointer': !loadingAnswer,
           }"
-          @click="nextQuestion"
+          @click="submit"
           :disabled="loadingAnswer"
+          v-if="!answerData"
         >
           <span v-if="loadingAnswer">
             <ProgressSpinner style="stroke: white; width: 1rem; height: 1rem" stroke-width="8" />
           </span>
-          <span v-else class="flex flex-row gap-2 items-center">
-            Suivant <ArrowForwardIcon class="size-4" />
-          </span>
+          <span v-else class="flex flex-row gap-2 items-center"> Vérifier </span>
+        </button>
+
+        <button
+          class="bg-primary text-white px-4 py-2 rounded-md hover:bg-primary/90 transition flex flex-row gap-2 items-center cursor-pointer"
+          @click="nextQuestion"
+          v-else
+        >
+          Suivant <ArrowForwardIcon class="size-4" />
         </button>
       </div>
     </div>

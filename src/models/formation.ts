@@ -26,5 +26,17 @@ export type FormationCategory = {
 
 export type FormationChapter = {
   id: number
+  formation_id: number
+  position: number
   name: string
+  created_at: string
+  updated_at: string
+}
+
+export type FormationQuestion = {
+  id: number
+  question: string
+  options?: string[]
+  type: 'true_false' | 'select' | 'open'
+  formation_chapter: FormationChapter
 }
