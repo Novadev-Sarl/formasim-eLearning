@@ -2,15 +2,13 @@
 import { useRoute, useRouter } from 'vue-router'
 import { useFormationStore } from '@/stores/formations'
 import { AxiosError } from 'axios'
-import { ProgressSpinner } from 'primevue'
 
 import ScheduleIcon from '@/assets/icons/schedule.svg'
 import FormatListNumberedIcon from '@/assets/icons/format-list-numbered.svg'
 import ChaptersList from './FormationView/ChaptersList.vue'
 
 import { formatDuration } from '@/utils/time'
-import { computed, onMounted, ref, watch, watchEffect } from 'vue'
-import type { DetailedFormation } from '@/models/formation'
+import { computed, onMounted, ref, watchEffect } from 'vue'
 import { useBreakpoints, breakpointsTailwind } from '@vueuse/core'
 
 const router = useRouter()
@@ -18,24 +16,14 @@ const route = useRoute()
 
 const formationStore = useFormationStore()
 
-const formation = ref<DetailedFormation | null>(null)
-
-watch(
-  () => route.params.id,
-  async (id) => {
-    try {
-      const res = await formationStore.get(+id)
-      formation.value = res
-    } catch (err) {
-      if (err instanceof AxiosError) {
-        if (err.response?.status === 404) {
-          router.replace('/404')
-        }
-      }
+const formation = await formationStore.get(+route.params.id).catch(async (err) => {
+  if (err instanceof AxiosError) {
+    if (err.response?.status === 404) {
+      await router.replace('/404')
     }
-  },
-  { immediate: true },
-)
+  }
+  throw err
+})
 
 const detailTab = ref<'Chapitres' | 'Description' | 'Certificat'>('Description')
 
@@ -53,20 +41,19 @@ watchEffect(() => {
   }
 })
 
-const chapters = computed(() => formation.value?.chapters ?? [])
+const chapters = computed(() => formation.chapters)
 
 const completedChapters = computed(() => {
-  return formation.value?.formation_user.completed_chapters.length ?? 0
+  return formation.formation_user.completed_chapters.length
 })
 
 const remainingTime = computed(() => {
-  if (!formation.value) return undefined
-  return formation.value?.duration - formation.value?.formation_user.spent_time
+  return formation.duration - formation.formation_user.spent_time
 })
 </script>
 
 <template>
-  <main v-if="formation" class="flex flex-col items-center">
+  <main class="flex flex-col items-center">
     <!-- Breadcrumb -->
     <Teleport to="header">
       <div
@@ -76,7 +63,7 @@ const remainingTime = computed(() => {
           <div class="flex flex-row items-center gap-4">
             <RouterLink to="/formations" class="text-black">Mes cours</RouterLink>
             <span class="text-xs text-black">&gt;</span>
-            <span class="text-gray-400">{{ formation.name }}</span>
+            <span class="text-neutral-400">{{ formation.name }}</span>
           </div>
         </div>
       </div>
@@ -193,9 +180,6 @@ const remainingTime = computed(() => {
       </div>
     </div>
   </main>
-  <div v-else class="flex items-center justify-center h-screen">
-    <ProgressSpinner style="stroke: var(--color-primary)" />
-  </div>
 </template>
 
 <style scoped>

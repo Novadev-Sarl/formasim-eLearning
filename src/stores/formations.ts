@@ -15,7 +15,11 @@ export const useFormationsStore = defineStore('formations', () => {
     return data
   }
 
-  return { get }
+  const clear = () => {
+    formations.value = null
+  }
+
+  return { get, clear }
 })
 
 export const useFormationCategoriesStore = defineStore('formationCategories', () => {
@@ -30,7 +34,11 @@ export const useFormationCategoriesStore = defineStore('formationCategories', ()
     return data
   }
 
-  return { get }
+  const clear = () => {
+    formationCategories.value = null
+  }
+
+  return { get, clear }
 })
 
 export const useFormationStore = defineStore('formation', () => {
@@ -45,5 +53,9 @@ export const useFormationStore = defineStore('formation', () => {
     return data
   }
 
-  return { get }
+  const clear = () => {
+    formation.value = {}
+  }
+
+  return { get, clear }
 })

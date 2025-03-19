@@ -3,6 +3,9 @@ import { useLocalStorage } from '@vueuse/core'
 import { destr } from 'destr'
 import { defineStore } from 'pinia'
 import axios from 'axios'
+import { useFormationsStore } from './formations'
+import { useFormationCategoriesStore } from './formations'
+import { useFormationStore } from './formations'
 
 export const useAuthStore = defineStore('auth', () => {
   /**
@@ -57,6 +60,10 @@ export const useAuthStore = defineStore('auth', () => {
         withXSRFToken: true,
       },
     )
+
+    useFormationsStore().clear()
+    useFormationCategoriesStore().clear()
+    useFormationStore().clear()
   }
 
   const updatePassword = async (input: { password: string; password_confirmation: string }) => {

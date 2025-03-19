@@ -23,17 +23,19 @@ axios.interceptors.response.use(
     return response
   },
   (error) => {
-    // If the user is not authenticated and tries to access a protected route, redirect to the login page
-    if (error.response.status === 401) {
-      router.replace(`/login?redirect=${router.currentRoute.value.path}`)
-      return { data: undefined }
-    }
+    if (error.response) {
+      // If the user is not authenticated and tries to access a protected route, redirect to the login page
+      if (error.response.status === 401) {
+        router.replace(`/login?redirect=${router.currentRoute.value.path}`)
+        return { data: undefined }
+      }
 
-    // If the CSRF token is invalid, refresh it
-    if (error.response.status === 419) {
-      return axios.get('/sanctum/csrf-cookie').then(() => {
-        return axios(error.config)
-      })
+      // If the CSRF token is invalid, refresh it
+      if (error.response.status === 419) {
+        return axios.get('/sanctum/csrf-cookie').then(() => {
+          return axios(error.config)
+        })
+      }
     }
 
     return Promise.reject(error)

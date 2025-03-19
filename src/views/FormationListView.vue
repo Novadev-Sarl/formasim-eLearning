@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import { useFormationsStore, useFormationCategoriesStore } from '@/stores/formations'
 
-import { ProgressSpinner } from 'primevue'
-
 import GridViewIcon from '@/assets/icons/grid-view.svg'
 import ListIcon from '@/assets/icons/list.svg'
 import SearchIcon from '@/assets/icons/search.svg'
@@ -38,18 +36,20 @@ const resetFilters = () => {
   filters.lessThan30Min = false
 }
 
-const formations = ref<Formation[]>([])
-const formationCategories = ref<FormationCategory[]>([])
+let formations: Formation[] = []
+let formationCategories: FormationCategory[] = []
 
-const loading = ref(true)
-Promise.all([formationsStore.get(), formationCategoriesStore.get()]).then(([res, res2]) => {
-  formations.value = res
-  formationCategories.value = res2
-  loading.value = false
-})
+await Promise.all([
+  formationsStore.get().then((res) => {
+    formations = res
+  }),
+  formationCategoriesStore.get().then((res) => {
+    formationCategories = res
+  }),
+])
 
 const filteredFormations = computed(() => {
-  let initialFormations = formations.value
+  let initialFormations = formations.slice()
   if (filters.category.length > 0) {
     initialFormations = initialFormations.filter((formation: Formation) => {
       return (
@@ -83,11 +83,7 @@ const filteredFormations = computed(() => {
 
 <template>
   <main class="flex flex-row justify-center mt-4">
-    <div class="flex items-center justify-center w-full grow" v-if="loading">
-      <ProgressSpinner style="stroke: var(--color-primary)" />
-    </div>
-
-    <div v-else class="flex flex-col-reverse md:flex-row max-w-7xl grow">
+    <div class="flex flex-col-reverse md:flex-row max-w-7xl grow">
       <div class="flex flex-col grow max-md:px-4">
         <!-- Header-->
         <div
