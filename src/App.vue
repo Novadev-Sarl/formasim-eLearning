@@ -19,7 +19,7 @@ const { height: headerHeight } = useElementSize(header)
 
 <template>
   <header
-    class="fixed top-0 left-0 flex flex-col w-full bg-white z-[3] ring-1 ring-neutral-100"
+    class="fixed top-0 left-0 flex flex-col w-full bg-white z-[3] ring-1 ring-neutral-100 shadow-md"
     v-if="!isFullscreenRoute"
     ref="header"
   >
