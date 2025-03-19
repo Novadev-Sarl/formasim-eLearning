@@ -8,7 +8,23 @@ export type Formation = {
   chapters_count: number
 }
 
+export type DetailedFormation = Omit<Formation, 'chapters_count'> & {
+  chapters: FormationChapter[]
+  formation_user: FormationUser
+}
+
+export type FormationUser = {
+  current_question: number
+  spent_time: number
+  completed_chapters: number[]
+}
+
 export type FormationCategory = {
+  id: number
+  name: string
+}
+
+export type FormationChapter = {
   id: number
   name: string
 }

@@ -1,4 +1,4 @@
-import type { Formation, FormationCategory } from '@/models/formation'
+import type { DetailedFormation, Formation, FormationCategory } from '@/models/formation'
 import axios from 'axios'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
@@ -34,13 +34,13 @@ export const useFormationCategoriesStore = defineStore('formationCategories', ()
 })
 
 export const useFormationStore = defineStore('formation', () => {
-  const formation = ref<Formation | null>(null)
+  const formation = ref<Record<number, DetailedFormation>>({})
 
   const get = async (id: number) => {
-    if (formation.value) return formation.value
+    if (formation.value[id]) return formation.value[id]
 
-    const { data } = await axios.get<Formation>(`/api/formations/${id}`)
-    formation.value = data
+    const { data } = await axios.get<DetailedFormation>(`/api/formations/${id}`)
+    formation.value[id] = data
 
     return data
   }
