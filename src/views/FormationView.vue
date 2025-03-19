@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import { useRoute, useRouter } from 'vue-router'
+import BreadCrumbs from '@/components/BreadCrumbs.vue'
+
+import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { useFormationStore } from '@/stores/formations'
 import { AxiosError } from 'axios'
 
@@ -55,19 +57,12 @@ const remainingTime = computed(() => {
 <template>
   <main class="flex flex-col items-center">
     <!-- Breadcrumb -->
-    <Teleport to="header">
-      <div
-        class="flex flex-col items-center justify-center w-full bg-white border-t-1 border-neutral-100 max-xl:px-8"
-      >
-        <div class="w-full py-2 max-w-7xl">
-          <div class="flex flex-row items-center gap-4">
-            <RouterLink to="/formations" class="text-black">Mes cours</RouterLink>
-            <span class="text-xs text-black">&gt;</span>
-            <span class="text-neutral-400">{{ formation.name }}</span>
-          </div>
-        </div>
-      </div>
-    </Teleport>
+    <BreadCrumbs
+      :items="[
+        { name: 'Mes cours', to: '/formations' },
+        { name: formation.name, to: '' },
+      ]"
+    />
 
     <div class="flex flex-col items-center w-full pb-32 bg-neutral-100 max-xl:px-8">
       <div class="flex flex-row justify-between w-full py-8 max-w-7xl">
@@ -94,7 +89,12 @@ const remainingTime = computed(() => {
           </div>
         </div>
         <div class="flex flex-row items-center gap-2">
-          <button class="text-white bg-primary action">Démarrer le cours</button>
+          <RouterLink
+            :to="`/formations/${formation.id}/course`"
+            class="text-white bg-primary action"
+          >
+            Démarrer le cours
+          </RouterLink>
         </div>
       </div>
     </div>
