@@ -6,12 +6,12 @@ import { ProgressSpinner } from 'primevue'
 
 import ScheduleIcon from '@/assets/icons/schedule.svg'
 import FormatListNumberedIcon from '@/assets/icons/format-list-numbered.svg'
-import CheckIcon from '@/assets/icons/check.svg'
-import LockIcon from '@/assets/icons/lock.svg'
+import ChaptersList from './FormationView/ChaptersList.vue'
 
 import { formatDuration } from '@/utils/time'
-import { computed, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch, watchEffect } from 'vue'
 import type { DetailedFormation } from '@/models/formation'
+import { useBreakpoints, breakpointsTailwind } from '@vueuse/core'
 
 const router = useRouter()
 const route = useRoute()
@@ -37,7 +37,21 @@ watch(
   { immediate: true },
 )
 
-const detailTab = ref<'Description' | 'Certificat'>('Description')
+const detailTab = ref<'Chapitres' | 'Description' | 'Certificat'>('Description')
+
+const isMobile = useBreakpoints(breakpointsTailwind).smaller('lg')
+
+onMounted(() => {
+  if (isMobile.value) {
+    detailTab.value = 'Chapitres'
+  }
+})
+
+watchEffect(() => {
+  if (!isMobile.value && detailTab.value === 'Chapitres') {
+    detailTab.value = 'Description'
+  }
+})
 
 const chapters = computed(() => formation.value?.chapters ?? [])
 
@@ -56,7 +70,7 @@ const remainingTime = computed(() => {
     <!-- Breadcrumb -->
     <Teleport to="header">
       <div
-        class="flex flex-col items-center justify-center w-full bg-white border-t-1 border-neutral-100"
+        class="flex flex-col items-center justify-center w-full bg-white border-t-1 border-neutral-100 max-xl:px-8"
       >
         <div class="w-full py-2 max-w-7xl">
           <div class="flex flex-row items-center gap-4">
@@ -68,17 +82,17 @@ const remainingTime = computed(() => {
       </div>
     </Teleport>
 
-    <div class="flex flex-col items-center w-full pb-32 bg-neutral-100">
+    <div class="flex flex-col items-center w-full pb-32 bg-neutral-100 max-xl:px-8">
       <div class="flex flex-row justify-between w-full py-8 max-w-7xl">
         <div class="flex flex-col gap-6">
           <h1 class="text-2xl font-bold">{{ formation.name }}</h1>
 
-          <div class="flex flex-row items-center gap-4">
+          <div class="flex flex-col md:flex-row md:items-center gap-4">
             <div class="flex flex-row items-center gap-2">
               <FormatListNumberedIcon class="size-6 text-primary" />
               <span class="text-gray-600">{{ chapters.length }} chapitres</span>
             </div>
-            <span class="font-bold text-gray-400">·</span>
+            <span class="font-bold text-gray-400 hidden md:block">·</span>
             <div class="flex flex-row items-center gap-2">
               <ScheduleIcon class="size-6 text-primary" />
               <span class="text-gray-600">{{ formatDuration(formation.duration) }}</span>
@@ -99,46 +113,16 @@ const remainingTime = computed(() => {
     </div>
 
     <div
-      class="relative flex flex-row w-full gap-16 p-8 -mb-16 bg-white -top-32 max-w-7xl rounded-xl ring-1 ring-neutral-200"
+      class="relative flex flex-row w-full gap-16 p-8 -mb-16 bg-white -top-32 max-w-7xl rounded-xl ring-1 ring-neutral-200 shadow-md"
     >
-      <div class="flex flex-col gap-4 shrink-0 min-w-1/3">
-        <h2 class="text-lg font-bold">{{ formation.name }}</h2>
-
-        <!-- Informations -->
-        <div class="flex flex-row gap-4 text-sm">
-          <div class="flex flex-row gap-2">
-            <FormatListNumberedIcon class="size-6 text-primary" />
-            <span class="text-gray-600"
-              >{{ completedChapters }}/{{ chapters.length }} complétés</span
-            >
-          </div>
-          <span class="font-bold text-neutral-400">·</span>
-          <div class="flex flex-row gap-2">
-            <ScheduleIcon class="size-6 text-primary" />
-            <span class="text-gray-600">{{ formatDuration(remainingTime ?? 0) }} restantes</span>
-          </div>
-        </div>
-
-        <!-- Chapters -->
-        <div class="flex flex-col bg-white rounded-lg ring-1 ring-neutral-200">
-          <template v-for="(chapter, index) in chapters" :key="chapter.id">
-            <div
-              class="flex flex-row justify-between gap-4 p-4 text-sm font-medium transition cursor-pointer border-neutral-200 hover:bg-neutral-50"
-              :class="{
-                'border-t': index !== 0,
-                'rounded-t-lg': index === 0,
-                'rounded-b-lg': index === chapters.length - 1,
-              }"
-            >
-              <span class="text-gray-600">Chapitre {{ index + 1 }}: {{ chapter.name }}</span>
-              <CheckIcon
-                class="size-6 text-primary"
-                v-if="formation.formation_user.completed_chapters.includes(chapter.id)"
-              />
-              <LockIcon class="size-6 text-primary" v-else />
-            </div>
-          </template>
-        </div>
+      <div class="flex flex-col gap-4 shrink-0 min-w-1/3" v-if="!isMobile">
+        <h2 class="text-lg font-bold">Chapitres</h2>
+        <ChaptersList
+          :formation="formation"
+          :chapters="chapters"
+          :completed-chapters="completedChapters"
+          :remaining-time="remainingTime!"
+        />
       </div>
 
       <!-- Details -->
@@ -151,6 +135,15 @@ const remainingTime = computed(() => {
 
         <!-- Tabs -->
         <div class="flex flex-row w-full gap-2 border-b border-neutral-200">
+          <button
+            class="flex flex-row items-center gap-2 p-2 cursor-pointer lg:hidden"
+            :class="{
+              'font-semibold border-b-3 -mb-px border-primary': detailTab === 'Chapitres',
+            }"
+            @click="detailTab = 'Chapitres'"
+          >
+            Chapitres
+          </button>
           <button
             class="flex flex-row items-center gap-2 p-2 cursor-pointer"
             :class="{
@@ -169,6 +162,16 @@ const remainingTime = computed(() => {
           >
             Certificat Obtenu
           </button>
+        </div>
+
+        <!-- Chapters -->
+        <div v-if="detailTab === 'Chapitres'" class="flex flex-col gap-4">
+          <ChaptersList
+            :formation="formation"
+            :chapters="chapters"
+            :completed-chapters="completedChapters"
+            :remaining-time="remainingTime!"
+          />
         </div>
 
         <!-- Description -->
