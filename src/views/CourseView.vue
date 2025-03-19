@@ -1,14 +1,17 @@
 <script setup lang="ts">
 import BreadCrumbs from '@/components/BreadCrumbs.vue'
+import CongratulationModal from '@/views/CourseView/CongratulationModal.vue'
 
 import ArrowBackIcon from '@/assets/icons/arrow-back.svg'
 import ArrowForwardIcon from '@/assets/icons/arrow-forward.svg'
 import SchoolIcon from '@/assets/icons/school.svg'
 import ScheduleIcon from '@/assets/icons/schedule.svg'
+import CheckIcon from '@/assets/icons/check.svg'
+import CloseIcon from '@/assets/icons/close.svg'
 
 import { ProgressSpinner } from 'primevue'
 
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useFormationStore } from '@/stores/formations'
 import { formatDuration } from '@/utils/time'
 import axios from 'axios'
@@ -17,15 +20,20 @@ import type { FormationQuestion } from '@/models/formation'
 import { useNotificationStore } from '@/stores/notification'
 
 const route = useRoute()
+const router = useRouter()
 const formationID = route.params.id
 
 const notificationStore = useNotificationStore()
 const formationStore = useFormationStore()
 const formation = await formationStore.get(+formationID)
 
-const question = ref(
-  (await axios.get<FormationQuestion>(`/api/formations/${formationID}/question`)).data,
+const { data } = await axios.get<{ question: FormationQuestion; courseCompleted: boolean }>(
+  `/api/formations/${formationID}/question`,
 )
+
+const question = ref(data.question)
+const courseCompleted = ref(data.courseCompleted)
+const showCongratulationModal = ref(false)
 
 const answer = ref<string | null>(null)
 const spentTime = ref<number>(formation.formation_user.spent_time)
@@ -33,7 +41,7 @@ const spentTime = ref<number>(formation.formation_user.spent_time)
 const loadingAnswer = ref(false)
 const answerData = ref<{
   trueAnswer: string
-  newQuestion: FormationQuestion
+  newQuestion?: FormationQuestion
 } | null>(null)
 const submit = async () => {
   loadingAnswer.value = true
@@ -41,8 +49,9 @@ const submit = async () => {
   try {
     const { data } = await axios.post<{
       trueAnswer: string | boolean
-      newQuestion: FormationQuestion
+      newQuestion?: FormationQuestion
       spentTime: number
+      courseCompleted: boolean
     }>(`/api/formations/${formationID}/answer`, {
       answer: answer.value,
     })
@@ -52,6 +61,10 @@ const submit = async () => {
       newQuestion: data.newQuestion,
     }
     spentTime.value = data.spentTime
+
+    if (data.courseCompleted && !courseCompleted.value) {
+      showCongratulationModal.value = true
+    }
   } catch (error) {
     notificationStore.addNotification(
       'Une erreur est survenue lors de la vérification de la réponse',
@@ -63,11 +76,17 @@ const submit = async () => {
   }
 }
 
-const nextQuestion = () => {
+const nextQuestion = async () => {
   if (!answerData.value) {
     console.warn('No answer data')
     return
   }
+
+  if (!answerData.value.newQuestion) {
+    await router.push(`/formations/${formationID}`)
+    return
+  }
+
   question.value = answerData.value.newQuestion
   answer.value = null
   answerData.value = null
@@ -87,6 +106,12 @@ const remainingTime = computed(() => {
         { name: formation.name, to: `/formations/${formationID}` },
         { name: question.formation_chapter.name, to: '' },
       ]"
+    />
+
+    <CongratulationModal
+      v-if="showCongratulationModal"
+      :formation-id="+formationID"
+      @close="showCongratulationModal = false"
     />
 
     <div class="flex flex-col items-center w-full pb-32 bg-neutral-100 max-xl:px-8">
@@ -125,7 +150,7 @@ const remainingTime = computed(() => {
         <template v-if="question.type === 'true_false'">
           <div class="flex flex-col gap-4">
             <div
-              class="transition flex flex-row gap-2 ring-1 py-2 px-4 rounded-md items-center"
+              class="transition flex flex-row gap-2 ring-1 py-2 px-4 rounded-md items-center justify-between"
               :class="{
                 // Answer not validated
                 'bg-neutral-100 ring-neutral-200 cursor-pointer has-checked:bg-primary/10 has-checked:ring-primary':
@@ -143,19 +168,27 @@ const remainingTime = computed(() => {
                 }
               "
             >
-              <input
-                type="radio"
-                name="answer"
-                id="answer-true"
-                class="accent-primary"
-                :checked="answer === 'true'"
-                :disabled="loadingAnswer || answerData !== null"
+              <div class="flex flex-row gap-2 items-center">
+                <input
+                  type="radio"
+                  name="answer"
+                  id="answer-true"
+                  class="accent-primary"
+                  :checked="answer === 'true'"
+                  :disabled="loadingAnswer || answerData !== null"
+                />
+                <label for="answer-true">Vrai</label>
+              </div>
+
+              <CheckIcon class="size-6 text-green-500" v-if="answerData?.trueAnswer === 'true'" />
+              <CloseIcon
+                class="size-6 text-red-500"
+                v-if="answerData?.trueAnswer === 'false' && answer === 'true'"
               />
-              <label for="answer-true">Vrai</label>
             </div>
 
             <div
-              class="transition flex flex-row gap-2 ring-1 py-2 px-4 rounded-md items-center"
+              class="transition flex flex-row gap-2 ring-1 py-2 px-4 rounded-md items-center justify-between"
               :class="{
                 // Answer not validated
                 'bg-neutral-100 ring-neutral-200 cursor-pointer has-checked:bg-primary/10 has-checked:ring-primary':
@@ -173,15 +206,23 @@ const remainingTime = computed(() => {
                 }
               "
             >
-              <input
-                type="radio"
-                name="answer"
-                id="answer-false"
-                class="accent-primary"
-                :checked="answer === 'false'"
-                :disabled="loadingAnswer || answerData !== null"
+              <div class="flex flex-row gap-2 items-center">
+                <input
+                  type="radio"
+                  name="answer"
+                  id="answer-false"
+                  class="accent-primary"
+                  :checked="answer === 'false'"
+                  :disabled="loadingAnswer || answerData !== null"
+                />
+                <label for="answer-false">Faux</label>
+              </div>
+
+              <CheckIcon class="size-6 text-green-500" v-if="answerData?.trueAnswer === 'false'" />
+              <CloseIcon
+                class="size-6 text-red-500"
+                v-if="answerData?.trueAnswer === 'true' && answer === 'false'"
               />
-              <label for="answer-false">Faux</label>
             </div>
           </div>
         </template>
@@ -197,6 +238,12 @@ const remainingTime = computed(() => {
                 placeholder="Entrez votre réponse"
                 :disabled="loadingAnswer || answerData !== null"
               />
+              <template v-if="answerData">
+                <span class="">Réponse attendue :</span>
+                <span class="text-sm text-gray-500">
+                  {{ answerData.trueAnswer }}
+                </span>
+              </template>
             </div>
           </div>
         </template>
@@ -205,7 +252,7 @@ const remainingTime = computed(() => {
           <div
             v-for="(option, index) in question.options"
             :key="index"
-            class="transition flex flex-row gap-2 ring-1 py-2 px-4 rounded-md items-center"
+            class="transition flex flex-row gap-2 ring-1 py-2 px-4 rounded-md items-center justify-between"
             :class="{
               // Answer not validated
               'bg-neutral-100 ring-neutral-200 has-checked:bg-primary/10 has-checked:ring-primary cursor-pointer':
@@ -223,28 +270,32 @@ const remainingTime = computed(() => {
               }
             "
           >
-            <input
-              type="radio"
-              name="answer"
-              :id="`answer-${index}`"
-              class="accent-primary"
-              :checked="answer === option"
-              :disabled="loadingAnswer || answerData !== null"
+            <div class="flex flex-row gap-2 items-center">
+              <input
+                type="radio"
+                name="answer"
+                :id="`answer-${index}`"
+                class="accent-primary"
+                :checked="answer === option"
+                :disabled="loadingAnswer || answerData !== null"
+              />
+              <label :for="`answer-${index}`">{{ option }}</label>
+            </div>
+
+            <CheckIcon class="size-6 text-green-500" v-if="answerData?.trueAnswer === option" />
+            <CloseIcon
+              class="size-6 text-red-500"
+              v-if="answerData && answerData?.trueAnswer !== option && answer === option"
             />
-            <label :for="`answer-${index}`">{{ option }}</label>
           </div>
         </template>
       </div>
 
       <div class="flex flex-row justify-end w-full">
         <button
-          class="bg-primary text-white px-4 py-2 rounded-md hover:bg-primary/90 transition"
-          :class="{
-            'opacity-50 cursor-not-allowed': loadingAnswer,
-            'opacity-100 cursor-pointer': !loadingAnswer,
-          }"
+          class="bg-primary text-white px-4 py-2 rounded-md hover:bg-primary/90 transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+          :disabled="loadingAnswer || answer === null"
           @click="submit"
-          :disabled="loadingAnswer"
           v-if="!answerData"
         >
           <span v-if="loadingAnswer">

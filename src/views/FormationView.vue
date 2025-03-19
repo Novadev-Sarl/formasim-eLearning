@@ -50,7 +50,7 @@ const completedChapters = computed(() => {
 })
 
 const remainingTime = computed(() => {
-  return formation.duration - formation.formation_user.spent_time
+  return Math.max(formation.duration - formation.formation_user.spent_time / 60, 0)
 })
 </script>
 
