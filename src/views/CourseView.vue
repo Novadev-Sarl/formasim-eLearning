@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import BreadCrumbs from '@/components/BreadCrumbs.vue'
-import CongratulationModal from '@/views/CourseView/CongratulationModal.vue'
+import CongratulationModal from './CourseView/CongratulationModal.vue'
+import InactivityModal from './CourseView/InactivityModal.vue'
 
 import ArrowBackIcon from '@/assets/icons/arrow-back.svg'
 import ArrowForwardIcon from '@/assets/icons/arrow-forward.svg'
@@ -18,6 +19,7 @@ import axios from 'axios'
 import { computed, ref } from 'vue'
 import type { FormationQuestion } from '@/models/formation'
 import { useNotificationStore } from '@/stores/notification'
+import { useNow } from '@vueuse/core'
 
 const route = useRoute()
 const router = useRouter()
@@ -38,6 +40,9 @@ const showCongratulationModal = ref(false)
 const answer = ref<string | null>(null)
 const spentTime = ref<number>(formation.formation_user.spent_time)
 
+const lastActivity = ref(new Date())
+const now = useNow()
+
 const loadingAnswer = ref(false)
 const answerData = ref<{
   trueAnswer: string
@@ -45,6 +50,7 @@ const answerData = ref<{
 } | null>(null)
 const submit = async () => {
   loadingAnswer.value = true
+  lastActivity.value = now.value
 
   try {
     const { data } = await axios.post<{
@@ -114,12 +120,17 @@ const remainingTime = computed(() => {
       @close="showCongratulationModal = false"
     />
 
+    <InactivityModal
+      v-if="lastActivity && now.getTime() - lastActivity.getTime() > 1000 * 60 * 5"
+      @close="lastActivity = now"
+    />
+
     <div class="flex flex-col items-center w-full pb-32 bg-neutral-100 max-xl:px-8">
       <div class="flex flex-row justify-between w-full py-8 max-w-7xl">
         <div class="flex flex-col gap-6">
           <RouterLink
             :to="`/formations/${formationID}`"
-            class="text-primary flex flex-row gap-2 items-center"
+            class="flex flex-row items-center gap-2 text-primary"
           >
             <ArrowBackIcon class="size-4" />
             Retour aux détails de la formation
@@ -142,7 +153,7 @@ const remainingTime = computed(() => {
     </div>
 
     <div
-      class="relative flex flex-col w-full gap-16 p-8 -mb-16 bg-white -top-32 max-w-7xl rounded-xl ring-1 ring-neutral-200 justify-between shadow-md"
+      class="relative flex flex-col justify-between w-full gap-16 p-8 -mb-16 bg-white shadow-md -top-32 max-w-7xl rounded-xl ring-1 ring-neutral-200"
     >
       <span class="text-2xl font-bold">{{ question.question }}</span>
 
@@ -150,7 +161,7 @@ const remainingTime = computed(() => {
         <template v-if="question.type === 'true_false'">
           <div class="flex flex-col gap-4">
             <div
-              class="transition flex flex-row gap-2 ring-1 py-2 px-4 rounded-md items-center justify-between"
+              class="flex flex-row items-center justify-between gap-2 px-4 py-2 transition rounded-md ring-1"
               :class="{
                 // Answer not validated
                 'bg-neutral-100 ring-neutral-200 cursor-pointer has-checked:bg-primary/10 has-checked:ring-primary':
@@ -168,7 +179,7 @@ const remainingTime = computed(() => {
                 }
               "
             >
-              <div class="flex flex-row gap-2 items-center">
+              <div class="flex flex-row items-center gap-2">
                 <input
                   type="radio"
                   name="answer"
@@ -180,15 +191,15 @@ const remainingTime = computed(() => {
                 <label for="answer-true">Vrai</label>
               </div>
 
-              <CheckIcon class="size-6 text-green-500" v-if="answerData?.trueAnswer === 'true'" />
+              <CheckIcon class="text-green-500 size-6" v-if="answerData?.trueAnswer === 'true'" />
               <CloseIcon
-                class="size-6 text-red-500"
+                class="text-red-500 size-6"
                 v-if="answerData?.trueAnswer === 'false' && answer === 'true'"
               />
             </div>
 
             <div
-              class="transition flex flex-row gap-2 ring-1 py-2 px-4 rounded-md items-center justify-between"
+              class="flex flex-row items-center justify-between gap-2 px-4 py-2 transition rounded-md ring-1"
               :class="{
                 // Answer not validated
                 'bg-neutral-100 ring-neutral-200 cursor-pointer has-checked:bg-primary/10 has-checked:ring-primary':
@@ -206,7 +217,7 @@ const remainingTime = computed(() => {
                 }
               "
             >
-              <div class="flex flex-row gap-2 items-center">
+              <div class="flex flex-row items-center gap-2">
                 <input
                   type="radio"
                   name="answer"
@@ -218,9 +229,9 @@ const remainingTime = computed(() => {
                 <label for="answer-false">Faux</label>
               </div>
 
-              <CheckIcon class="size-6 text-green-500" v-if="answerData?.trueAnswer === 'false'" />
+              <CheckIcon class="text-green-500 size-6" v-if="answerData?.trueAnswer === 'false'" />
               <CloseIcon
-                class="size-6 text-red-500"
+                class="text-red-500 size-6"
                 v-if="answerData?.trueAnswer === 'true' && answer === 'false'"
               />
             </div>
@@ -252,7 +263,7 @@ const remainingTime = computed(() => {
           <div
             v-for="(option, index) in question.options"
             :key="index"
-            class="transition flex flex-row gap-2 ring-1 py-2 px-4 rounded-md items-center justify-between"
+            class="flex flex-row items-center justify-between gap-2 px-4 py-2 transition rounded-md ring-1"
             :class="{
               // Answer not validated
               'bg-neutral-100 ring-neutral-200 has-checked:bg-primary/10 has-checked:ring-primary cursor-pointer':
@@ -270,7 +281,7 @@ const remainingTime = computed(() => {
               }
             "
           >
-            <div class="flex flex-row gap-2 items-center">
+            <div class="flex flex-row items-center gap-2">
               <input
                 type="radio"
                 name="answer"
@@ -282,9 +293,9 @@ const remainingTime = computed(() => {
               <label :for="`answer-${index}`">{{ option }}</label>
             </div>
 
-            <CheckIcon class="size-6 text-green-500" v-if="answerData?.trueAnswer === option" />
+            <CheckIcon class="text-green-500 size-6" v-if="answerData?.trueAnswer === option" />
             <CloseIcon
-              class="size-6 text-red-500"
+              class="text-red-500 size-6"
               v-if="answerData && answerData?.trueAnswer !== option && answer === option"
             />
           </div>
@@ -293,7 +304,7 @@ const remainingTime = computed(() => {
 
       <div class="flex flex-row justify-end w-full">
         <button
-          class="bg-primary text-white px-4 py-2 rounded-md hover:bg-primary/90 transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+          class="px-4 py-2 text-white transition rounded-md cursor-pointer bg-primary hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
           :disabled="loadingAnswer || answer === null"
           @click="submit"
           v-if="!answerData"
@@ -301,11 +312,11 @@ const remainingTime = computed(() => {
           <span v-if="loadingAnswer">
             <ProgressSpinner style="stroke: white; width: 1rem; height: 1rem" stroke-width="8" />
           </span>
-          <span v-else class="flex flex-row gap-2 items-center"> Vérifier </span>
+          <span v-else class="flex flex-row items-center gap-2"> Vérifier </span>
         </button>
 
         <button
-          class="bg-primary text-white px-4 py-2 rounded-md hover:bg-primary/90 transition flex flex-row gap-2 items-center cursor-pointer"
+          class="flex flex-row items-center gap-2 px-4 py-2 text-white transition rounded-md cursor-pointer bg-primary hover:bg-primary/90"
           @click="nextQuestion"
           v-else
         >
