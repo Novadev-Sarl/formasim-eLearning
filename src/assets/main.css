@@ -1,6 +1,23 @@
 @import 'tailwindcss';
 
+@font-face {
+  font-family: 'Rubik';
+  font-style: normal;
+  font-display: swap;
+  src: url('@/assets/fonts/rubik/Rubik-VariableFont_wght.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Rubik';
+  font-style: italic;
+  font-display: swap;
+  src: url('@/assets/fonts/rubik/Rubik-Italic-VariableFont_wght.ttf') format('truetype');
+}
+
 @theme {
+  --font-sans: 'Rubik', sans-serif;
+  --default-font-family: var(--font-sans);
+
   --color-primary: #27ae60;
 
   --color-primary-50: #f2faf6;
