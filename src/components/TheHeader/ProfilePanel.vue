@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import LogoutIcon from '@/assets/icons/logout.svg'
+
 import { useAuthStore } from '@/stores/auth'
 import { useRouter } from 'vue-router'
 
