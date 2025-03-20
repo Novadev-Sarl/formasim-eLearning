@@ -7,6 +7,7 @@ import LinkedInIcon from '@/assets/icons/linkedin.svg'
 import OpenInNewIcon from '@/assets/icons/open-in-new.svg'
 import LoginIcon from '@/assets/icons/login.svg'
 import FormaSimLogo from '@/assets/icons/formasim.svg'
+import LockIcon from '@/assets/icons/lock.svg'
 
 import TheMobileMenu from '@/components/TheMobileMenu.vue'
 import ProfilePanel from '@/components/TheHeader/ProfilePanel.vue'
@@ -93,9 +94,9 @@ const profilePanelRight = computed(() => {
 })
 
 const links = [
-  { label: 'Accueil', external: false, to: '/' },
-  { label: 'Mes cours', external: false, to: '/formations' },
-  { label: 'Mon profil', external: false, to: '/profile' },
+  { label: 'Accueil', external: false, to: '/', authenticated: false },
+  { label: 'Mes cours', external: false, to: '/formations', authenticated: true },
+  { label: 'Mon profil', external: false, to: '/profile', authenticated: true },
   { label: 'Contact', external: true, to: 'https://formasim.ch/fr/contact' },
 ]
 </script>
@@ -185,10 +186,11 @@ const links = [
               <RouterLink
                 v-else
                 :to="link.to"
-                class="transition-all hover:text-primary"
+                class="flex flex-row items-center gap-2 transition-all hover:text-primary"
                 active-class="font-semibold text-primary"
               >
                 {{ link.label }}
+                <LockIcon v-if="link.authenticated && !auth.user" class="size-4" />
               </RouterLink>
             </li>
           </ul>
