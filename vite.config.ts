@@ -14,6 +14,6 @@ export default defineConfig({
   plugins: [vue(), vueJsx(), vueDevTools(), tailwindcss(), svgLoader()],
   resolve: { alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) } },
   server: {
-    allowedHosts: [hostname(), hostname() + '.local'],
+    allowedHosts: [hostname().toLowerCase(), hostname().toLowerCase() + '.local'],
   },
 })

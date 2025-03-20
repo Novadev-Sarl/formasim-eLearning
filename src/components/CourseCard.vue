@@ -1,6 +1,12 @@
 <script setup lang="ts">
 import FormatListNumberedIcon from '@/assets/icons/format-list-numbered.svg'
 import ScheduleIcon from '@/assets/icons/schedule.svg'
+import type { Formation } from '@/models/formation'
+import { formatDuration } from '@/utils/time'
+
+defineProps<{
+  formation: Formation
+}>()
 </script>
 
 <template>
@@ -13,7 +19,7 @@ import ScheduleIcon from '@/assets/icons/schedule.svg'
 
     <div class="flex flex-col gap-2 px-6 py-4">
       <div class="flex flex-col gap-4">
-        <h3 class="text-lg font-semibold">Formation de base</h3>
+        <h3 class="text-lg font-semibold">{{ formation.name }}</h3>
 
         <div class="flex flex-row justify-between text-sm">
           <div class="flex flex-row gap-2">
@@ -23,7 +29,7 @@ import ScheduleIcon from '@/assets/icons/schedule.svg'
 
           <div class="flex flex-row gap-2 mr-5">
             <ScheduleIcon class="size-6 text-primary" />
-            <span class="text-neutral-600">3h30</span>
+            <span class="text-neutral-600">{{ formatDuration(formation.duration) }}</span>
           </div>
         </div>
 

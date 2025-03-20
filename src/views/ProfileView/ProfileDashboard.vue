@@ -2,6 +2,8 @@
 import { ref } from 'vue'
 import CourseCard from '@/components/CourseCard.vue'
 import DownloadIcon from '@/assets/icons/download.svg'
+import { useAxios } from '@vueuse/integrations/useAxios.mjs'
+import type { Formation } from '@/models/formation'
 
 const stats = ref([
   {
@@ -17,7 +19,8 @@ const stats = ref([
     value: 10,
   },
 ])
-console.log('rawr')
+
+const { data: formations } = useAxios<Formation[]>('/api/formations')
 </script>
 
 <template>
@@ -44,7 +47,12 @@ console.log('rawr')
 
     <div class="flex flex-col gap-4 md:flex-row">
       <!-- todo: dynamic courses -->
-      <CourseCard v-for="i in 3" :key="i" class="shadow-md md:w-1/3">
+      <CourseCard
+        v-for="formation in formations"
+        :key="formation.id"
+        :formation="formation"
+        class="shadow-md md:w-1/3"
+      >
         <template #footer>
           <!-- todo: dynamic date -->
           <span class="text-sm text-neutral-500">Suivi le 04.03.2024</span>
