@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { RouterView, useRoute } from 'vue-router'
-import { computed, onErrorCaptured, ref } from 'vue'
+import { computed, onErrorCaptured, ref, useTemplateRef } from 'vue'
 
 import TheHeader from '@/components/TheHeader.vue'
 import TheFooter from '@/components/TheFooter.vue'
@@ -16,7 +16,7 @@ const notificationStore = useNotificationStore()
 const fullscreenRoutes = ['/login', '/reset-password', '/forgot-password']
 
 const isFullscreenRoute = computed(() => fullscreenRoutes.includes(route.path))
-const header = ref<HTMLElement | null>(null)
+const header = useTemplateRef('header')
 const { height: headerHeight } = useElementSize(header)
 
 const error = ref(false)
@@ -63,7 +63,7 @@ onErrorCaptured((err) => {
         />
 
         <template #fallback>
-          <div class="flex items-center justify-center w-full grow min-h-screen">
+          <div class="flex items-center justify-center w-full min-h-screen grow">
             <ProgressSpinner style="stroke: var(--color-primary)" />
           </div>
         </template>

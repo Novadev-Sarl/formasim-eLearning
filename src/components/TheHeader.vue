@@ -5,17 +5,15 @@ import FacebookF from '@/assets/icons/facebook.svg'
 import InstagramIcon from '@/assets/icons/instagram.svg'
 import LinkedInIcon from '@/assets/icons/linkedin.svg'
 import OpenInNewIcon from '@/assets/icons/open-in-new.svg'
-import LogoutIcon from '@/assets/icons/logout.svg'
 import LoginIcon from '@/assets/icons/login.svg'
 import FormaSimLogo from '@/assets/icons/formasim.svg'
 
 import TheMobileMenu from '@/components/TheMobileMenu.vue'
+import ProfilePanel from '@/components/TheHeader/ProfilePanel.vue'
 
-import { computed, ref, watch } from 'vue'
+import { computed, ref, watch, useTemplateRef } from 'vue'
 import { useWindowSize, useBreakpoints, breakpointsTailwind, useAnimate } from '@vueuse/core'
 import { useAuthStore } from '@/stores/auth'
-import { vOnClickOutside } from '@vueuse/components'
-import { useRouter } from 'vue-router'
 
 const breakpoints = useBreakpoints(breakpointsTailwind)
 
@@ -23,11 +21,9 @@ const isDesktop = computed(() => breakpoints.greater('lg').value)
 const { width: windowWidth } = useWindowSize()
 
 const auth = useAuthStore()
-const router = useRouter()
 
 const profilePanelShown = ref(false)
-const profilePanelRef = ref<HTMLDivElement>()
-const profileButtonRef = ref<HTMLDivElement>()
+const profileButton = useTemplateRef('profileButton')
 
 const toggleProfilePanel = () => {
   profilePanelShown.value = !profilePanelShown.value
@@ -85,7 +81,16 @@ watch(navigationMenuShown, () => {
   }
 })
 
-const headerRef = ref<HTMLDivElement>()
+const profilePanelTop = computed(() => {
+  if (!profileButton.value) return 0
+  return profileButton.value.offsetTop + profileButton.value.clientHeight + 10
+})
+
+const profilePanelRight = computed(() => {
+  if (!profileButton.value) return 0
+  if (!isDesktop.value) return 0
+  return windowWidth.value - profileButton.value.offsetLeft - profileButton.value.clientWidth
+})
 
 const links = [
   { label: 'Accueil', external: false, to: '/' },
@@ -96,7 +101,7 @@ const links = [
 </script>
 
 <template>
-  <div class="flex flex-col items-center w-full" ref="headerRef">
+  <div class="flex flex-col items-center w-full" ref="header">
     <!-- Contact section -->
     <div class="flex-row justify-between hidden w-full p-2 xl:flex max-xl:px-8 max-w-7xl">
       <div class="flex flex-row gap-6 text-sm text-neutral-600">
@@ -197,70 +202,16 @@ const links = [
         <template v-if="auth.user">
           <div
             @click="toggleProfilePanel"
-            ref="profileButtonRef"
+            ref="profileButton"
             class="grid text-xl text-white rounded-full shadow-md cursor-pointer size-12 bg-primary place-items-center"
           >
             {{ auth.user?.firstname.charAt(0) }}{{ auth.user?.lastname.charAt(0) }}
           </div>
-          <Teleport to="body">
-            <div
-              v-show="profilePanelShown"
-              ref="profilePanelRef"
-              v-on-click-outside="() => (profilePanelShown = false)"
-              class="fixed flex flex-col gap-6 p-4 bg-white shadow-md rounded-xl max-lg:left-4 max-lg:right-4 ring-1 ring-neutral-200 z-[4]"
-              :style="
-                profileButtonRef && profilePanelRef
-                  ? isDesktop
-                    ? {
-                        // Automatically align the profile panel to the right and bottom of the profile button
-                        right:
-                          windowWidth -
-                          profileButtonRef.offsetLeft -
-                          profileButtonRef.clientWidth +
-                          'px',
-                        top: profileButtonRef.offsetTop + profileButtonRef.clientHeight + 10 + 'px',
-                      }
-                    : {
-                        // Automatically align the profile panel to the bottom of the profile button
-                        top: profileButtonRef.offsetTop + profileButtonRef.clientHeight + 10 + 'px',
-                      }
-                  : {}
-              "
-            >
-              <!-- Card Header -->
-              <div
-                class="flex flex-row items-center gap-4 cursor-pointer"
-                @click="
-                  () => {
-                    router.push('/profile')
-                    profilePanelShown = false
-                  }
-                "
-              >
-                <div
-                  class="grid text-xl text-white rounded-full shadow-md size-12 bg-primary place-items-center"
-                >
-                  {{ auth.user?.firstname.charAt(0) }}{{ auth.user?.lastname.charAt(0) }}
-                </div>
-                <div class="flex flex-col">
-                  <span class="font-semibold">
-                    {{ auth.user?.firstname }} {{ auth.user?.lastname }}
-                  </span>
-                </div>
-              </div>
-
-              <!-- Card Body -->
-              <div class="flex flex-col items-stretch gap-2">
-                <div
-                  @click="auth.logout"
-                  class="flex flex-row items-center gap-2 text-red-500 cursor-pointer"
-                >
-                  <LogoutIcon class="size-6" />
-                  <span> Déconnexion </span>
-                </div>
-              </div>
-            </div>
-          </Teleport>
+          <ProfilePanel
+            v-if="profilePanelShown"
+            :top="profilePanelTop"
+            :right="profilePanelRight"
+          />
         </template>
         <template v-else>
           <RouterLink
