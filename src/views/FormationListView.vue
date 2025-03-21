@@ -146,7 +146,7 @@ const filteredFormations = computed(() => {
             >
               <template #footer>
                 <RouterLink
-                  :to="`/formations/${formation.id}`"
+                  :to="`/formations/${formation.id}/course`"
                   class="py-3 font-semibold text-center bg-white border action border-primary text-primary hover:bg-primary hover:text-white"
                 >
                   Démarrer le cours
