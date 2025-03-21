@@ -15,17 +15,12 @@ const router = useRouter()
 const route = useRoute()
 const errored = ref(false)
 
-watch(
-  [auth],
-  () => {
-    axios.get('/api/me', { validateStatus: null }).then((response) => {
-      if (response.status === 200) {
-        router.push((route.query.redirect as string) || '/dashboard')
-      }
-    })
-  },
-  { immediate: true },
-)
+// Redirect if the user is already logged in, checking the authentication state
+axios.get('/api/me', { validateStatus: null }).then((response) => {
+  if (response.status === 200) {
+    router.push((route.query.redirect as string) || '/dashboard')
+  }
+})
 
 const email = ref('')
 const password = ref('')
