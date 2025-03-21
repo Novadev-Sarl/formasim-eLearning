@@ -31,14 +31,12 @@ const { data: formations } = await useAxios<Formation[]>('/api/formations')
 
     <div class="flex flex-col grid-cols-3 gap-4 md:grid">
       <!-- TODO: Add a link to the course -->
-      <CourseCard v-for="formation in formations" :key="formation.id" :formation="formation">
-        <template #footer>
-          <!-- TODO: Add a link to the quizz -->
-          <button class="transition cursor-pointer size-fit text-primary hover:text-primary-600">
-            Suivre le cours &rarr;
-          </button>
-        </template>
-      </CourseCard>
+      <CourseCard
+        v-for="formation in formations"
+        :key="formation.formation.id"
+        :formation="formation.formation"
+        class="cursor-pointer group"
+      />
     </div>
   </div>
 </template>

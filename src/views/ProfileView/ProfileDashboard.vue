@@ -47,22 +47,10 @@ const { data: formations } = useAxios<Formation[]>('/api/formations')
     <!-- todo: dynamic courses -->
     <CourseCard
       v-for="formation in formations"
-      :key="formation.id"
-      :formation="formation"
+      :key="formation.formation_id"
+      :formation="formation.formation!"
+      :completed-at="formation.completed_at ?? undefined"
       class="shadow-md md:w-1/3"
-    >
-      <template #footer>
-        <!-- todo: dynamic date -->
-        <span class="text-sm text-neutral-500">Suivi le 04.03.2024</span>
-        <!-- todo: link to download -->
-        <div
-          class="flex flex-row items-center gap-1 text-sm cursor-pointer text-primary"
-          @click="() => console.log('dowload certificate')"
-        >
-          <DownloadIcon class="size-5" />
-          <span>Télécharger le certificat</span>
-        </div>
-      </template>
-    </CourseCard>
+    />
   </div>
 </template>
