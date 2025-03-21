@@ -10,8 +10,6 @@ import ScheduleIcon from '@/assets/icons/schedule.svg'
 import CheckIcon from '@/assets/icons/check.svg'
 import CloseIcon from '@/assets/icons/close.svg'
 
-import { ProgressSpinner } from 'primevue'
-
 import { useRoute, useRouter } from 'vue-router'
 import { useFormationStore } from '@/stores/formations'
 import { formatDuration } from '@/utils/time'
@@ -20,6 +18,7 @@ import { computed, ref } from 'vue'
 import type { FormationQuestion } from '@/models/formation'
 import { useNotificationStore } from '@/stores/notification'
 import { useNow } from '@vueuse/core'
+import LoadingIndicator from '@/components/LoadingIndicator.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -310,7 +309,7 @@ const remainingTime = computed(() => {
           v-if="!answerData"
         >
           <span v-if="loadingAnswer">
-            <ProgressSpinner style="stroke: white; width: 1rem; height: 1rem" stroke-width="8" />
+            <LoadingIndicator class="text-white" />
           </span>
           <span v-else class="flex flex-row items-center gap-2"> Vérifier </span>
         </button>
