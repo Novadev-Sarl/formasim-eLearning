@@ -22,6 +22,7 @@ export type FormationUser = {
   current_question: number
   spent_time: number
   completed_chapters: number[]
+  formation?: Formation
 }
 
 export type FormationCategory = {
