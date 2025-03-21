@@ -17,11 +17,7 @@ defineProps<{
     :to="`/formations/${formation.id}`"
     class="flex flex-col gap-2 bg-white rounded-sm cursor-pointer ring-1 ring-neutral-100 group"
   >
-    <img
-      src="https://placehold.co/600x400"
-      alt="Course Card"
-      class="object-cover w-full h-48 rounded-sm"
-    />
+    <img :src="formation.image" alt="Course Card" class="object-cover w-full h-48 rounded-sm" />
 
     <div class="flex flex-col gap-2 px-6 py-4">
       <div class="flex flex-col gap-4">
