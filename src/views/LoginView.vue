@@ -5,7 +5,7 @@ import Logo from '@/assets/icons/formasim.svg'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useNotificationStore } from '@/stores/notification'
-import { ref, watch } from 'vue'
+import { ref } from 'vue'
 import axios, { AxiosError } from 'axios'
 import { RouterLink } from 'vue-router'
 
