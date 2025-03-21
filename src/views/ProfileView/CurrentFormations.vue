@@ -1,14 +1,48 @@
 <script setup lang="ts">
 import CourseCard from '@/components/CourseCard.vue'
-import { useAxios } from '@vueuse/integrations/useAxios'
 import type { Formation } from '@/models/formation'
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
+import axios from 'axios'
+import LoadingIndicator from '@/components/LoadingIndicator.vue'
 
+type SelfFormation = {
+  formation: Formation
+  certificate?: {
+    name: string
+    date: string
+    duration: number
+  }
+}
+
+// TODO: Add a filter to the formations
 const activeTab = ref(0)
-
-const tabs = ['Cours actifs', 'Cours terminés']
-
-const { data: formations } = await useAxios<Formation[]>('/api/formations')
+const tabs = ['Tous', 'Cours actifs', 'Cours terminés']
+const formations = ref<SelfFormation[]>([])
+const formationsLoading = ref(0)
+watch(
+  activeTab,
+  async () => {
+    try {
+      formationsLoading.value++
+      if (activeTab.value === 0) {
+        formations.value = await axios
+          .get<SelfFormation[]>(`/api/me/formations`)
+          .then((res) => res.data)
+      } else if (activeTab.value === 1) {
+        formations.value = await axios
+          .get<SelfFormation[]>(`/api/me/formations?completed=false`)
+          .then((res) => res.data)
+      } else {
+        formations.value = await axios
+          .get<SelfFormation[]>(`/api/me/formations?completed=true`)
+          .then((res) => res.data)
+      }
+    } finally {
+      formationsLoading.value--
+    }
+  },
+  { immediate: true },
+)
 </script>
 
 <template>
@@ -29,8 +63,12 @@ const { data: formations } = await useAxios<Formation[]>('/api/formations')
       </button>
     </div>
 
-    <div class="flex flex-col grid-cols-3 gap-4 md:grid">
-      <!-- TODO: Add a link to the course -->
+    <div v-if="formationsLoading > 0">
+      <div class="flex flex-col items-center justify-center min-h-96">
+        <LoadingIndicator class="size-12 text-primary" />
+      </div>
+    </div>
+    <div class="flex flex-col grid-cols-3 gap-4 md:grid" v-else>
       <CourseCard
         v-for="formation in formations"
         :key="formation.formation.id"
