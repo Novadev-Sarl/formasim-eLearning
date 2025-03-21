@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import CourseCard from '@/components/CourseCard.vue'
-import DownloadIcon from '@/assets/icons/download.svg'
 import { useAxios } from '@vueuse/integrations/useAxios.mjs'
-import type { Formation } from '@/models/formation'
+import type { Formation, FormationUser } from '@/models/formation'
 
 const stats = ref([
   {
@@ -20,7 +19,9 @@ const stats = ref([
   },
 ])
 
-const { data: formations } = useAxios<Formation[]>('/api/formations')
+const { data: formations } = useAxios<FormationUser[] & { formation: Formation }>(
+  '/api/me/formations?limit=3',
+)
 </script>
 
 <template>
