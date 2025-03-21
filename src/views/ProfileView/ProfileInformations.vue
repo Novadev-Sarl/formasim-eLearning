@@ -78,65 +78,61 @@ const savePassword = async () => {
 </script>
 
 <template>
-  <div class="flex flex-col gap-4">
-    <h1 class="text-2xl font-bold">Informations personnelles</h1>
+  <div class="flex flex-col gap-4 p-6 bg-white rounded-sm ring-1 ring-neutral-100">
+    <h2 class="text-lg font-medium">Informations générales</h2>
 
-    <div class="flex flex-col gap-4 p-6 bg-white rounded-sm ring-1 ring-neutral-100">
-      <h2 class="text-lg font-medium">Informations générales</h2>
+    <div class="flex flex-col md:grid grid-cols-[1fr_2fr] auto-rows-fr gap-1 md:items-center">
+      <template v-if="auth.user?.title">
+        <span class="text-neutral-500">Titre</span>
+        <span class="font-semibold max-md:mb-4">{{ auth.user?.title }}</span>
+      </template>
 
-      <div class="flex flex-col md:grid grid-cols-[1fr_2fr] auto-rows-fr gap-1 md:items-center">
-        <template v-if="auth.user?.title">
-          <span class="text-neutral-500">Titre</span>
-          <span class="font-semibold max-md:mb-4">{{ auth.user?.title }}</span>
-        </template>
+      <span class="text-neutral-500">Prénom</span>
+      <span class="font-semibold max-md:mb-4">{{ auth.user?.firstname }}</span>
 
-        <span class="text-neutral-500">Prénom</span>
-        <span class="font-semibold max-md:mb-4">{{ auth.user?.firstname }}</span>
+      <span class="text-neutral-500">Nom</span>
+      <span class="font-semibold max-md:mb-4">{{ auth.user?.lastname }}</span>
 
-        <span class="text-neutral-500">Nom</span>
-        <span class="font-semibold max-md:mb-4">{{ auth.user?.lastname }}</span>
+      <span class="text-neutral-500">Téléphone</span>
+      <span class="font-semibold max-md:mb-4">{{ auth.user?.phone_number }}</span>
 
-        <span class="text-neutral-500">Téléphone</span>
-        <span class="font-semibold max-md:mb-4">{{ auth.user?.phone_number }}</span>
-
-        <span class="text-neutral-500">Email</span>
-        <span class="font-semibold">{{ auth.user?.email }}</span>
-      </div>
+      <span class="text-neutral-500">Email</span>
+      <span class="font-semibold">{{ auth.user?.email }}</span>
     </div>
+  </div>
 
-    <div class="flex flex-col gap-4 p-6 bg-white rounded-sm ring-1 ring-neutral-100">
-      <h2 class="text-lg font-medium">Mot de passe</h2>
+  <div class="flex flex-col gap-4 p-6 bg-white rounded-sm ring-1 ring-neutral-100">
+    <h2 class="text-lg font-medium">Mot de passe</h2>
 
-      <div class="flex flex-col md:grid grid-cols-[1fr_2fr] gap-1 md:items-center">
-        <label for="password" class="text-neutral-500">Mot de passe</label>
-        <input
-          id="password"
-          type="password"
-          class="font-semibold max-md:mb-4 invalid:outline-red-500 invalid:outline-1 invalid:animate-shake"
-          v-model="password"
-          minlength="8"
-          ref="passwordInput"
-        />
+    <div class="flex flex-col md:grid grid-cols-[1fr_2fr] gap-1 md:items-center">
+      <label for="password" class="text-neutral-500">Mot de passe</label>
+      <input
+        id="password"
+        type="password"
+        class="font-semibold max-md:mb-4 invalid:outline-red-500 invalid:outline-1 invalid:animate-shake"
+        v-model="password"
+        minlength="8"
+        ref="passwordInput"
+      />
 
-        <label for="passwordConfirmation" class="text-neutral-500"
-          >Confirmation du mot de passe</label
-        >
-        <input
-          id="passwordConfirmation"
-          type="password"
-          class="font-semibold max-md:mb-4 invalid:outline-red-500 invalid:outline-1 invalid:animate-shake"
-          v-model="passwordConfirmation"
-          minlength="8"
-          ref="passwordConfirmationInput"
-        />
-      </div>
-
-      <button
-        class="self-end px-6 py-3 text-white action bg-primary align-self-end"
-        @click="savePassword"
+      <label for="passwordConfirmation" class="text-neutral-500"
+        >Confirmation du mot de passe</label
       >
-        Enregistrer
-      </button>
+      <input
+        id="passwordConfirmation"
+        type="password"
+        class="font-semibold max-md:mb-4 invalid:outline-red-500 invalid:outline-1 invalid:animate-shake"
+        v-model="passwordConfirmation"
+        minlength="8"
+        ref="passwordConfirmationInput"
+      />
     </div>
+
+    <button
+      class="self-end px-6 py-3 text-white action bg-primary align-self-end"
+      @click="savePassword"
+    >
+      Enregistrer
+    </button>
   </div>
 </template>

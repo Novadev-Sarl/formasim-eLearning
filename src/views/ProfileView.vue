@@ -116,8 +116,12 @@ const tabs = [
         </div>
       </aside>
 
-      <!-- Tab content -->
-      <component :is="tabs[selectedTab].content" class="grow" />
+      <div class="flex flex-col gap-4 items-stretch grow">
+        <h1 class="text-2xl font-bold">{{ tabs[selectedTab].label }}</h1>
+
+        <!-- Tab content -->
+        <component :is="tabs[selectedTab].content" class="grow" />
+      </div>
     </div>
   </div>
 </template>
