@@ -40,6 +40,7 @@ const login = async () => {
   errored.value = false
   try {
     await auth.login(email.value, password.value, remember.value)
+    router.push((route.query.redirect as string) || '/dashboard')
   } catch (error) {
     if (error instanceof AxiosError) {
       if (error.response?.status === 401) {
