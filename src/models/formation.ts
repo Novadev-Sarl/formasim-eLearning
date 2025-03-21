@@ -4,6 +4,11 @@ export type Formation = {
   description: string
   image: string
   duration: number
+  certificate?: {
+    name: string
+    date: string
+    duration: number
+  }
   formation_category?: FormationCategory
   chapters_count: number
 }

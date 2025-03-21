@@ -8,7 +8,7 @@ const activeTab = ref(0)
 
 const tabs = ['Cours actifs', 'Cours terminés']
 
-const { data: formations } = useAxios<Formation[]>('/api/formations')
+const { data: formations } = await useAxios<Formation[]>('/api/formations')
 </script>
 
 <template>
