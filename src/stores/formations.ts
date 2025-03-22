@@ -59,7 +59,7 @@ export const useFormationStore = defineStore('formation', () => {
   const formation = ref<Map<number, DetailedFormation>>(new Map())
 
   const get = async (id: number) => {
-    if (formation.value.has(id)) return formation.value.get(id)
+    if (formation.value.has(id)) return formation.value.get(id)!
 
     const { data } = await axios.get<DetailedFormation>(`/api/formations/${id}`)
     formation.value.set(id, data)

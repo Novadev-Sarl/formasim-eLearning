@@ -4,6 +4,7 @@ export type Formation = {
   description: string
   image: string
   duration: number
+  certificate_name: string
   certificate?: {
     name: string
     date: string
