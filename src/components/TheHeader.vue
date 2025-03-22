@@ -163,9 +163,9 @@ const links = [
       class="flex flex-row items-center justify-between w-full grid-cols-4 p-2 lg:grid max-xl:px-8 max-xl:py-6 max-w-7xl text-neutral-500"
     >
       <!-- FormaSim logo -->
-      <div class="flex justify-self-start">
+      <RouterLink to="/" class="flex justify-self-start">
         <FormaSimLogo class="h-10 my-2 lg:my-4 lg:h-14" />
-      </div>
+      </RouterLink>
 
       <!-- NavBar -->
       <div class="hidden col-span-2 justify-self-center lg:flex">

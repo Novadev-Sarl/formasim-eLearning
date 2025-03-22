@@ -14,7 +14,6 @@ type SelfFormation = {
   }
 }
 
-// TODO: Add a filter to the formations
 const activeTab = ref(0)
 const tabs = ['Tous', 'Cours actifs', 'Cours terminés']
 const formations = ref<SelfFormation[]>([])

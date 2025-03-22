@@ -18,7 +18,7 @@ const errored = ref(false)
 // Redirect if the user is already logged in, checking the authentication state
 axios.get('/api/me', { validateStatus: null }).then((response) => {
   if (response.status === 200) {
-    router.push((route.query.redirect as string) || '/dashboard')
+    router.push((route.query.redirect as string) || '/profile')
   }
 })
 
@@ -35,7 +35,7 @@ const login = async () => {
   errored.value = false
   try {
     await auth.login(email.value, password.value, remember.value)
-    router.push((route.query.redirect as string) || '/dashboard')
+    router.push((route.query.redirect as string) || '/profile')
   } catch (error) {
     if (error instanceof AxiosError) {
       if (error.response?.status === 401) {

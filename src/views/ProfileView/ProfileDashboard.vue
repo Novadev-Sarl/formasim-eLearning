@@ -45,7 +45,6 @@ const { data: formations } = useAxios<FormationUser[] & { formation: Formation }
   <h2 class="text-lg font-semibold">Derniers cours suivis</h2>
 
   <div class="flex flex-col gap-4 md:flex-row">
-    <!-- todo: dynamic courses -->
     <CourseCard
       v-for="formation in formations"
       :key="formation.formation_id"

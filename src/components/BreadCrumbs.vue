@@ -12,7 +12,7 @@ defineProps<{
 <template>
   <Teleport to="header">
     <div
-      class="flex flex-col items-center justify-center w-full bg-white border-t-1 border-neutral-100 max-xl:px-8"
+      class="flex-col items-center justify-center hidden w-full bg-white md:flex border-t-1 border-neutral-100 max-xl:px-8"
     >
       <div class="w-full py-2 max-w-7xl">
         <div class="flex flex-row items-center gap-4">

@@ -54,7 +54,7 @@ const auth = useAuthStore()
                 navigationMenuShown = false
               }
             "
-            v-if="auth.isLoggedIn"
+            v-if="auth.user"
           >
             <div
               class="grid text-xl text-white rounded-full shadow-md size-12 bg-primary place-items-center"
@@ -89,7 +89,7 @@ const auth = useAuthStore()
                 navigationMenuShown = false
               }
             "
-            v-if="auth.isLoggedIn"
+            v-if="auth.user"
           />
         </div>
 
