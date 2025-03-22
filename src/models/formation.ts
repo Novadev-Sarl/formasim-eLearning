@@ -20,6 +20,7 @@ export type DetailedFormation = Omit<Formation, 'chapters_count'> & {
 
 export type FormationUser = {
   formation_id: number
+  user_id: number
   current_question: number
   spent_time: number
   completed_chapters: number[]
