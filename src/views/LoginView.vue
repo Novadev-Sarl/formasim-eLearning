@@ -5,7 +5,7 @@ import Logo from '@/assets/icons/formasim.svg'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useNotificationStore } from '@/stores/notification'
-import { ref, watch } from 'vue'
+import { ref } from 'vue'
 import axios, { AxiosError } from 'axios'
 import { RouterLink } from 'vue-router'
 
@@ -15,17 +15,12 @@ const router = useRouter()
 const route = useRoute()
 const errored = ref(false)
 
-watch(
-  [auth],
-  () => {
-    axios.get('/api/me', { validateStatus: null }).then((response) => {
-      if (response.status === 200) {
-        router.push((route.query.redirect as string) || '/dashboard')
-      }
-    })
-  },
-  { immediate: true },
-)
+// Redirect if the user is already logged in, checking the authentication state
+axios.get('/api/me', { validateStatus: null }).then((response) => {
+  if (response.status === 200) {
+    router.push((route.query.redirect as string) || '/dashboard')
+  }
+})
 
 const email = ref('')
 const password = ref('')
@@ -40,6 +35,7 @@ const login = async () => {
   errored.value = false
   try {
     await auth.login(email.value, password.value, remember.value)
+    router.push((route.query.redirect as string) || '/dashboard')
   } catch (error) {
     if (error instanceof AxiosError) {
       if (error.response?.status === 401) {

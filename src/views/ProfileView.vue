@@ -116,8 +116,25 @@ const tabs = [
         </div>
       </aside>
 
-      <!-- Tab content -->
-      <component :is="tabs[selectedTab].content" class="grow" />
+      <div class="flex flex-col gap-4 items-stretch grow">
+        <h1 class="text-2xl font-bold">{{ tabs[selectedTab].label }}</h1>
+
+        <!-- Tab content with suspense and loading indication -->
+        <Suspense timeout="0">
+          <component :is="tabs[selectedTab].content" class="grow" />
+
+          <template #fallback>
+            <div class="flex items-center justify-center grow">
+              <div class="flex flex-col items-center gap-4 p-8 rounded-lg ring-1 ring-neutral-100">
+                <div
+                  class="w-8 h-8 border-4 border-primary/20 border-t-primary rounded-full animate-spin"
+                ></div>
+                <span class="text-base font-medium text-neutral-600">Chargement...</span>
+              </div>
+            </div>
+          </template>
+        </Suspense>
+      </div>
     </div>
   </div>
 </template>

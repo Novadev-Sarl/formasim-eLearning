@@ -9,7 +9,7 @@ import TheErrorMessage from '@/components/TheErrorMessage.vue'
 import ToastNotification from '@/components/ToastNotification.vue'
 import { useNotificationStore } from '@/stores/notification'
 import { useElementSize } from '@vueuse/core'
-import { ProgressSpinner } from 'primevue'
+import LoadingIndicator from '@/components/LoadingIndicator.vue'
 
 const route = useRoute()
 const notificationStore = useNotificationStore()
@@ -64,7 +64,7 @@ onErrorCaptured((err) => {
 
         <template #fallback>
           <div class="flex items-center justify-center w-full min-h-screen grow">
-            <ProgressSpinner style="stroke: var(--color-primary)" />
+            <LoadingIndicator class="text-primary size-24" />
           </div>
         </template>
       </Suspense>

@@ -4,6 +4,11 @@ export type Formation = {
   description: string
   image: string
   duration: number
+  certificate?: {
+    name: string
+    date: string
+    duration: number
+  }
   formation_category?: FormationCategory
   chapters_count: number
 }
@@ -14,9 +19,14 @@ export type DetailedFormation = Omit<Formation, 'chapters_count'> & {
 }
 
 export type FormationUser = {
+  formation_id: number
+  user_id: number
   current_question: number
   spent_time: number
   completed_chapters: number[]
+  formation?: Formation
+  created_at: string
+  completed_at: string | null
 }
 
 export type FormationCategory = {
