@@ -24,14 +24,12 @@ const search = ref('')
 
 const filters = reactive({
   category: [] as number[],
-  certificate: false,
   lessThan60Min: false,
   lessThan30Min: false,
 })
 
 const resetFilters = () => {
   filters.category = []
-  filters.certificate = false
   filters.lessThan60Min = false
   filters.lessThan30Min = false
 }
@@ -74,8 +72,6 @@ const filteredFormations = computed(() => {
     const fuse = new Fuse(initialFormations, { keys: ['name', 'description'] })
     initialFormations = fuse.search(search.value).map((result) => result.item)
   }
-
-  // TODO: Add certificate filter
 
   return initialFormations
 })
@@ -239,17 +235,6 @@ const filteredFormations = computed(() => {
         <div class="flex flex-col gap-2 p-6 bg-white rounded-sm ring-1 ring-gray-200">
           <span class="text-sm font-semibold">Spécificités</span>
           <ul class="flex flex-col gap-4 py-2">
-            <li class="flex flex-row items-center gap-2">
-              <input
-                type="checkbox"
-                id="certificate"
-                class="w-4 h-4 accent-primary"
-                v-model="filters.certificate"
-              />
-              <label for="certificate" class="text-sm cursor-pointer text-neutral-500">
-                <span>Donne droit à un certificat</span>
-              </label>
-            </li>
             <li class="flex flex-row items-center gap-2">
               <input
                 type="checkbox"
