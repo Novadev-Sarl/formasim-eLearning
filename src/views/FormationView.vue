@@ -96,7 +96,7 @@ const downloadCertificate = () => {
     />
 
     <div class="flex flex-col items-center w-full pb-32 bg-neutral-100 max-xl:px-8">
-      <div class="flex flex-row justify-between w-full py-8 max-w-7xl">
+      <div class="flex flex-col justify-between w-full gap-4 py-8 md:flex-row max-w-7xl">
         <div class="flex flex-col gap-6">
           <h1 class="text-2xl font-bold">{{ formation.name }}</h1>
 
@@ -119,10 +119,10 @@ const downloadCertificate = () => {
             {{ formation.formation_category.name }}
           </div>
         </div>
-        <div class="flex flex-row items-center gap-2">
+        <div class="flex flex-row items-center w-full gap-2 md:w-fit">
           <RouterLink
             :to="`/formations/${formation.id}/course`"
-            class="text-white bg-primary action"
+            class="w-full text-center text-white bg-primary action md:w-fit"
           >
             Démarrer le cours
           </RouterLink>
