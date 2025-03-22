@@ -4,6 +4,10 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
 export const useFormationsStore = defineStore('formations', () => {
+  /**
+   * Liste des formations disponibles. Est mise à jour automatiquement lorsque la fonction `get` est appelée,
+   * puis est retournée pour chaque appel subséquent.
+   */
   const formations = ref<Formation[] | null>(null)
 
   const get = async () => {
@@ -23,6 +27,10 @@ export const useFormationsStore = defineStore('formations', () => {
 })
 
 export const useFormationCategoriesStore = defineStore('formationCategories', () => {
+  /**
+   * Liste des catégories de formations disponibles. Est mise à jour automatiquement lorsque la fonction `get` est appelée,
+   * puis est retournée pour chaque appel subséquent.
+   */
   const formationCategories = ref<FormationCategory[] | null>(null)
 
   const get = async () => {
@@ -42,6 +50,12 @@ export const useFormationCategoriesStore = defineStore('formationCategories', ()
 })
 
 export const useFormationStore = defineStore('formation', () => {
+  /**
+   * Détails d'une formation spécifique. Est mise à jour automatiquement lorsque la fonction `get` est appelée,
+   * puis est retournée pour chaque appel subséquent.
+   *
+   * Les formations sont stockées dans une HashMap, indexées par leur identifiant.
+   */
   const formation = ref<Map<number, DetailedFormation>>(new Map())
 
   const get = async (id: number) => {
