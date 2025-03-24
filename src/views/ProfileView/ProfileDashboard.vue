@@ -19,7 +19,7 @@ const stats = ref([
   },
 ])
 
-const { data: formations } = useAxios<FormationUser[] & { formation: Formation }>(
+const { data: formations } = await useAxios<FormationUser[] & { formation: Formation }>(
   '/api/me/formations?limit=3',
 )
 </script>
@@ -44,7 +44,7 @@ const { data: formations } = useAxios<FormationUser[] & { formation: Formation }
 
   <h2 class="text-lg font-semibold">Derniers cours suivis</h2>
 
-  <div class="flex flex-col gap-4 md:flex-row">
+  <div class="flex flex-col gap-4 md:flex-row" v-if="formations.length > 0">
     <CourseCard
       v-for="formation in formations"
       :key="formation.formation_id"
@@ -52,5 +52,20 @@ const { data: formations } = useAxios<FormationUser[] & { formation: Formation }
       :completed-at="formation.completed_at ?? undefined"
       class="shadow-md md:w-1/3"
     />
+  </div>
+  <div
+    v-else
+    class="flex flex-col items-center justify-center gap-2 text-center rounded-lg md:p-8 md:bg-white ring-1 ring-neutral-100"
+  >
+    <h3 class="text-lg font-semibold md:text-xl text-neutral-800">
+      Vous n'avez pas encore de cours
+    </h3>
+    <p class="text-sm md:text-base text-neutral-600 md:max-w-md">
+      Pour commencer à suivre un cours, rendez-vous sur la
+      <RouterLink to="/formations" class="text-primary hover:text-primary-dark">
+        page des formations
+      </RouterLink>
+      .
+    </p>
   </div>
 </template>
