@@ -25,11 +25,11 @@ watch(
       formationsLoading.value++
       if (activeTab.value === 0) {
         formations.value = await authenticatedAxios
-          .get<SelfFormation[]>(`/api/me/formations`)
+          .get<SelfFormation[]>(`/api/me/formations?started=true`)
           .then((res) => res.data)
       } else if (activeTab.value === 1) {
         formations.value = await authenticatedAxios
-          .get<SelfFormation[]>(`/api/me/formations?completed=false`)
+          .get<SelfFormation[]>(`/api/me/formations?started=true&completed=false`)
           .then((res) => res.data)
       } else {
         formations.value = await authenticatedAxios

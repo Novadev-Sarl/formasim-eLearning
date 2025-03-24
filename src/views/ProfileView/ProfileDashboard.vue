@@ -22,7 +22,7 @@ const { data: uncompletedFormations } = await authenticatedAxios.get<
     formation: Formation
     completed_at: string | null
   }[]
->('/api/me/formations?completed=false')
+>('/api/me/formations?completed=false&started=true')
 
 const formations = [...uncompletedFormations, ...assignedFormations].slice(0, 3)
 
