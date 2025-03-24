@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { useRoute } from 'vue-router'
 import { ref } from 'vue'
-import axios, { AxiosError } from 'axios'
+import { AxiosError } from 'axios'
 import Logo from '@/assets/icons/formasim.svg'
 import ArrowBackIcon from '@/assets/icons/arrow-back.svg'
 import { useNotificationStore } from '@/stores/notification'
 import { useRouter } from 'vue-router'
+import { defaultAxios } from '@/utils/axios'
 
 const route = useRoute()
 const router = useRouter()
@@ -21,7 +22,7 @@ const resetPassword = async () => {
   errored.value = false
 
   try {
-    await axios.post(
+    await defaultAxios.post(
       import.meta.env.VITE_API_URL + '/api/reset-password',
       {
         password: password.value,

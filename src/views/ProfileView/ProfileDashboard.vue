@@ -1,27 +1,45 @@
 <script setup lang="ts">
-import { ref } from 'vue'
 import CourseCard from '@/components/CourseCard.vue'
-import { useAxios } from '@vueuse/integrations/useAxios.mjs'
-import type { Formation, FormationUser } from '@/models/formation'
+import type { Formation } from '@/models/formation'
+import { authenticatedAxios } from '@/utils/axios'
 
-const stats = ref([
+const { data: assignedFormations } = await authenticatedAxios.get<
   {
-    label: 'Nombre de cours suivis',
-    value: 10,
-  },
-  {
-    label: 'Nombre de cours suivis',
-    value: 10,
-  },
-  {
-    label: 'Nombre de cours suivis',
-    value: 10,
-  },
-])
+    formation: Formation
+    completed_at: string | null
+  }[]
+>('/api/me/formations')
 
-const { data: formations } = await useAxios<FormationUser[] & { formation: Formation }>(
-  '/api/me/formations?limit=3',
-)
+const { data: completedFormations } = await authenticatedAxios.get<
+  {
+    formation: Formation
+    completed_at: string | null
+  }[]
+>('/api/me/formations?completed=true')
+
+const { data: uncompletedFormations } = await authenticatedAxios.get<
+  {
+    formation: Formation
+    completed_at: string | null
+  }[]
+>('/api/me/formations?completed=false')
+
+const formations = [...uncompletedFormations, ...assignedFormations].slice(0, 3)
+
+const stats = [
+  {
+    label: 'Nombre de cours suivis',
+    value: uncompletedFormations.length,
+  },
+  {
+    label: 'Nombre de cours disponibles',
+    value: assignedFormations.length,
+  },
+  {
+    label: 'Nombre de certificats obtenus',
+    value: completedFormations.length,
+  },
+]
 </script>
 
 <template>
@@ -47,8 +65,8 @@ const { data: formations } = await useAxios<FormationUser[] & { formation: Forma
   <div class="flex flex-col gap-4 md:flex-row" v-if="formations.length > 0">
     <CourseCard
       v-for="formation in formations"
-      :key="formation.formation_id"
-      :formation="formation.formation!"
+      :key="formation.formation.id"
+      :formation="formation.formation"
       :completed-at="formation.completed_at ?? undefined"
       class="shadow-md md:w-1/3"
     />
