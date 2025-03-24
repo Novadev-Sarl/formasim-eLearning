@@ -21,6 +21,14 @@ export const useAuthStore = defineStore('auth', () => {
     },
   })
 
+  if (user.value === null) {
+    // Try to fetch the user from the API. Will fail if the user is not logged in,
+    // but we don't care, we will just keep the user set to null.
+    axios.get(`${import.meta.env.VITE_API_URL}/api/me`).then((response) => {
+      user.value = response.data
+    })
+  }
+
   /**
    * Login the user.
    * @param email - The email of the user.
