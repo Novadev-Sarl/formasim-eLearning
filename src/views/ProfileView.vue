@@ -121,7 +121,7 @@ const tabs = [
 
         <!-- Tab content with suspense and loading indication -->
         <Suspense timeout="0">
-          <component :is="tabs[selectedTab].content" class="grow" />
+          <component :is="tabs[selectedTab].content" />
 
           <template #fallback>
             <div class="flex items-center justify-center grow">
