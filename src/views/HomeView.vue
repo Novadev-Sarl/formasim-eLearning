@@ -20,7 +20,7 @@ const scrollToOverview = () => {
           <h1
             class="w-full text-2xl font-bold text-white md:w-2/3 lg:w-1/2 xl:w-1/3 sm:text-3xl md:text-4xl"
           >
-            eLearning FormaSim : Blablablablablabla
+            eLearning FormaSim : Formations médicales sur mesure
           </h1>
           <p class="w-full text-sm text-white md:w-2/3 lg:w-1/2 xl:w-1/3 sm:text-base">
             L'eLearning FormaSim, votre plateforme d'eLearning dédiée aux formations médicales
