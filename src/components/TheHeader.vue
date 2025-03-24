@@ -219,6 +219,7 @@ const links = [
             {{ auth.user?.firstname.charAt(0) }}{{ auth.user?.lastname.charAt(0) }}
           </div>
           <ProfilePanel
+            @close="toggleProfilePanel"
             v-if="profilePanelShown"
             :top="profilePanelTop"
             :right="profilePanelRight"
