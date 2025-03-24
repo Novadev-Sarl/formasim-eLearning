@@ -202,7 +202,16 @@ const links = [
         class="flex-row items-center hidden gap-6 max-lg:col-start-1 lg:flex lg:justify-self-end text-neutral-400"
       >
         <template v-if="auth.user">
+          <img
+            :src="auth.user?.image"
+            alt="Profile"
+            class="grid text-xl text-white rounded-full shadow-md cursor-pointer size-12 bg-primary place-items-center"
+            ref="profileButton"
+            @click="toggleProfilePanel"
+            v-if="auth.user?.image"
+          />
           <div
+            v-else
             @click="toggleProfilePanel"
             ref="profileButton"
             class="grid text-xl text-white rounded-full shadow-md cursor-pointer size-12 bg-primary place-items-center"
@@ -210,6 +219,7 @@ const links = [
             {{ auth.user?.firstname.charAt(0) }}{{ auth.user?.lastname.charAt(0) }}
           </div>
           <ProfilePanel
+            @close="toggleProfilePanel"
             v-if="profilePanelShown"
             :top="profilePanelTop"
             :right="profilePanelRight"

@@ -67,13 +67,28 @@ watch(
         <LoadingIndicator class="size-12 text-primary" />
       </div>
     </div>
-    <div class="flex flex-col grid-cols-3 gap-4 md:grid" v-else>
+    <div class="flex flex-col grid-cols-3 gap-4 md:grid" v-else-if="formations.length > 0">
       <CourseCard
         v-for="formation in formations"
         :key="formation.formation.id"
         :formation="formation.formation"
         class="cursor-pointer group"
       />
+    </div>
+    <div
+      v-else
+      class="flex flex-col items-center justify-center gap-2 text-center rounded-lg md:p-8 md:bg-neutral-50"
+    >
+      <h3 class="text-lg font-semibold md:text-xl text-neutral-800">
+        Vous n'avez pas encore de cours
+      </h3>
+      <p class="text-sm md:text-base text-neutral-600 md:max-w-md">
+        Pour commencer à suivre un cours, rendez-vous sur la
+        <RouterLink to="/formations" class="text-primary hover:text-primary-dark">
+          page des formations
+        </RouterLink>
+        .
+      </p>
     </div>
   </div>
 </template>

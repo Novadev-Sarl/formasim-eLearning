@@ -60,10 +60,10 @@ const tabs = [
           <!-- Profile picture -->
           <div>
             <img
-              :src="auth.user?.picture"
+              :src="auth.user?.image"
               alt="Profile"
               class="rounded-full shadow-md size-16"
-              v-if="auth.user?.picture"
+              v-if="auth.user?.image"
             />
             <div
               v-else
@@ -121,7 +121,7 @@ const tabs = [
 
         <!-- Tab content with suspense and loading indication -->
         <Suspense timeout="0">
-          <component :is="tabs[selectedTab].content" class="grow" />
+          <component :is="tabs[selectedTab].content" />
 
           <template #fallback>
             <div class="flex items-center justify-center grow">

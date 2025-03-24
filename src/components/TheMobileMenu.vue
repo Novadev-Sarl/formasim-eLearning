@@ -56,11 +56,17 @@ const auth = useAuthStore()
             "
             v-if="auth.user"
           >
-            <div
+            <img
+              :src="auth.user?.image"
+              alt="Profile"
               class="grid text-xl text-white rounded-full shadow-md size-12 bg-primary place-items-center"
-              v-if="auth.user"
+              v-if="auth.user?.image"
+            />
+            <div
+              v-else
+              class="grid text-xl text-white rounded-full shadow-md size-12 bg-primary place-items-center"
             >
-              {{ auth.user?.firstname.charAt(0) }}{{ auth.user?.lastname.charAt(0) }}
+              {{ auth.user.firstname.charAt(0) }}{{ auth.user.lastname.charAt(0) }}
             </div>
             <div class="flex flex-col">
               <span class="font-semibold">

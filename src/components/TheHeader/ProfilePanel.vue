@@ -3,6 +3,7 @@ import LogoutIcon from '@/assets/icons/logout.svg'
 
 import { useAuthStore } from '@/stores/auth'
 import { useRouter } from 'vue-router'
+import { vOnClickOutside } from '@vueuse/components'
 
 defineEmits<{
   (e: 'close'): void
@@ -21,7 +22,7 @@ const auth = useAuthStore()
   <Teleport to="body">
     <div
       ref="profilePanel"
-      v-on-click-outside="$emit('close')"
+      v-on-click-outside="() => $emit('close')"
       class="fixed flex flex-col gap-6 p-4 bg-white shadow-md rounded-xl max-lg:left-4 max-lg:right-4 ring-1 ring-neutral-200 z-[4]"
       :style="{
         top: top + 'px',
@@ -38,8 +39,15 @@ const auth = useAuthStore()
           }
         "
       >
+        <img
+          :src="auth.user?.image"
+          alt="Profile"
+          class="rounded-full shadow-md size-12"
+          v-if="auth.user?.image"
+        />
         <div
           class="grid text-xl text-white rounded-full shadow-md size-12 bg-primary place-items-center"
+          v-else
         >
           {{ auth.user?.firstname.charAt(0) }}{{ auth.user?.lastname.charAt(0) }}
         </div>

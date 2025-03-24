@@ -60,8 +60,14 @@ onErrorCaptured((err) => {
           :style="{ paddingTop: isFullscreenRoute ? '0px' : `${headerHeight}px` }"
           class="min-h-screen"
           :class="{ 'pb-16': !isFullscreenRoute }"
+          v-if="Component"
         />
+        <!-- If the router is not yet initialized, we show a loading indicatorj -->
+        <div v-else class="flex items-center justify-center w-full min-h-screen grow">
+          <LoadingIndicator class="text-primary size-24" />
+        </div>
 
+        <!-- We also show a loading indicator if the current route is an async component and is not yet resolved -->
         <template #fallback>
           <div class="flex items-center justify-center w-full min-h-screen grow">
             <LoadingIndicator class="text-primary size-24" />
