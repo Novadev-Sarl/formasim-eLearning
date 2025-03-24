@@ -38,8 +38,15 @@ const auth = useAuthStore()
           }
         "
       >
+        <img
+          :src="auth.user?.image"
+          alt="Profile"
+          class="rounded-full shadow-md size-12"
+          v-if="auth.user?.image"
+        />
         <div
           class="grid text-xl text-white rounded-full shadow-md size-12 bg-primary place-items-center"
+          v-else
         >
           {{ auth.user?.firstname.charAt(0) }}{{ auth.user?.lastname.charAt(0) }}
         </div>

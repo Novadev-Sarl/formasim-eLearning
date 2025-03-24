@@ -9,7 +9,7 @@ export type User = {
   type: string
   type_appellation: string
   skill?: string
-  photo?: string
+  image?: string
   is_active: number
   show_on_client_page: number
   job?: string

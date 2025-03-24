@@ -60,10 +60,10 @@ const tabs = [
           <!-- Profile picture -->
           <div>
             <img
-              :src="auth.user?.picture"
+              :src="auth.user?.image"
               alt="Profile"
               class="rounded-full shadow-md size-16"
-              v-if="auth.user?.picture"
+              v-if="auth.user?.image"
             />
             <div
               v-else
