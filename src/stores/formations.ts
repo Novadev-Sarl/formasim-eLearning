@@ -1,5 +1,5 @@
 import type { DetailedFormation, Formation, FormationCategory } from '@/models/formation'
-import axios from 'axios'
+import { authenticatedAxios } from '@/utils/axios'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
@@ -13,7 +13,7 @@ export const useFormationsStore = defineStore('formations', () => {
   const get = async () => {
     if (formations.value) return formations.value
 
-    const { data } = await axios.get<Formation[]>('/api/formations')
+    const { data } = await authenticatedAxios.get<Formation[]>('/api/formations')
     formations.value = data
 
     return data
@@ -36,7 +36,7 @@ export const useFormationCategoriesStore = defineStore('formationCategories', ()
   const get = async () => {
     if (formationCategories.value) return formationCategories.value
 
-    const { data } = await axios.get<FormationCategory[]>('/api/formation-categories')
+    const { data } = await authenticatedAxios.get<FormationCategory[]>('/api/formation-categories')
     formationCategories.value = data
 
     return data
@@ -61,7 +61,7 @@ export const useFormationStore = defineStore('formation', () => {
   const get = async (id: number) => {
     if (formation.value.has(id)) return formation.value.get(id)!
 
-    const { data } = await axios.get<DetailedFormation>(`/api/formations/${id}`)
+    const { data } = await authenticatedAxios.get<DetailedFormation>(`/api/formations/${id}`)
     formation.value.set(id, data)
 
     return data

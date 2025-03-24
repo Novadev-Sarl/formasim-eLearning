@@ -2,7 +2,7 @@
 import { ref, computed } from 'vue'
 import DownloadIcon from '@/assets/icons/download.svg'
 import { breakpointsTailwind, useBreakpoints } from '@vueuse/core'
-import axios from 'axios'
+import { authenticatedAxios } from '@/utils/axios'
 import type { Formation } from '@/models/formation'
 import { formatDuration } from '@/utils/time'
 import { useNotificationStore } from '@/stores/notification'
@@ -23,7 +23,9 @@ const breakpoints = useBreakpoints(breakpointsTailwind)
 const isDesktop = breakpoints.greater('md')
 
 const completedFormations = ref(
-  await axios.get<SelfFormation[]>(`/api/me/formations?completed=true`).then((res) => res.data),
+  await authenticatedAxios
+    .get<SelfFormation[]>(`/api/me/formations?completed=true`)
+    .then((res) => res.data),
 )
 
 const activeTab = ref(0)
@@ -67,7 +69,7 @@ const downloadCertificate = async (formationId: number) => {
 
   try {
     // Fetch certificate as blob
-    const response = await axios.get(`/api/certificates/${formationId}`, {
+    const response = await authenticatedAxios.get(`/api/certificates/${formationId}`, {
       responseType: 'blob',
     })
 

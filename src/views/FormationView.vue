@@ -3,7 +3,8 @@ import BreadCrumbs from '@/components/BreadCrumbs.vue'
 
 import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { useFormationStore } from '@/stores/formations'
-import axios, { AxiosError } from 'axios'
+import { AxiosError } from 'axios'
+import { authenticatedAxios } from '@/utils/axios'
 
 import ScheduleIcon from '@/assets/icons/schedule.svg'
 import FormatListNumberedIcon from '@/assets/icons/format-list-numbered.svg'
@@ -61,7 +62,7 @@ const downloadCertificate = () => {
   if (downloadingCertificate.value) return
 
   downloadingCertificate.value = true
-  axios
+  authenticatedAxios
     .get(`/api/certificates/${formation.id}`, {
       responseType: 'blob',
     })

@@ -2,7 +2,7 @@
 import CourseCard from '@/components/CourseCard.vue'
 import type { Formation } from '@/models/formation'
 import { ref, watch } from 'vue'
-import axios from 'axios'
+import { authenticatedAxios } from '@/utils/axios'
 import LoadingIndicator from '@/components/LoadingIndicator.vue'
 
 type SelfFormation = {
@@ -24,15 +24,15 @@ watch(
     try {
       formationsLoading.value++
       if (activeTab.value === 0) {
-        formations.value = await axios
-          .get<SelfFormation[]>(`/api/me/formations`)
+        formations.value = await authenticatedAxios
+          .get<SelfFormation[]>(`/api/me/formations?started=true`)
           .then((res) => res.data)
       } else if (activeTab.value === 1) {
-        formations.value = await axios
-          .get<SelfFormation[]>(`/api/me/formations?completed=false`)
+        formations.value = await authenticatedAxios
+          .get<SelfFormation[]>(`/api/me/formations?started=true&completed=false`)
           .then((res) => res.data)
       } else {
-        formations.value = await axios
+        formations.value = await authenticatedAxios
           .get<SelfFormation[]>(`/api/me/formations?completed=true`)
           .then((res) => res.data)
       }

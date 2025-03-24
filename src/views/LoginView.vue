@@ -6,8 +6,9 @@ import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useNotificationStore } from '@/stores/notification'
 import { ref } from 'vue'
-import axios, { AxiosError } from 'axios'
+import { AxiosError } from 'axios'
 import { RouterLink } from 'vue-router'
+import { defaultAxios } from '@/utils/axios'
 
 const auth = useAuthStore()
 const notificationStore = useNotificationStore()
@@ -16,18 +17,20 @@ const route = useRoute()
 const errored = ref(false)
 
 // Redirect if the user is already logged in, checking the authentication state
-axios.get('/api/me', { validateStatus: null }).then((response) => {
-  if (response.status === 200) {
-    router.push((route.query.redirect as string) || '/profile')
-  }
-})
+defaultAxios
+  .get('/api/me')
+  .then((response) => {
+    if (response.status === 200) {
+      router.push((route.query.redirect as string) || '/profile')
+    }
+  })
+  .catch(() => null)
 
 const email = ref('')
 const password = ref('')
 const remember = ref(false)
 
 const isLoggingIn = ref(false)
-
 const login = async () => {
   if (isLoggingIn.value) return
 
@@ -35,7 +38,6 @@ const login = async () => {
   errored.value = false
   try {
     await auth.login(email.value, password.value, remember.value)
-    router.push((route.query.redirect as string) || '/profile')
   } catch (error) {
     if (error instanceof AxiosError) {
       if (error.response?.status === 401) {
@@ -52,13 +54,17 @@ const login = async () => {
         errored.value = true
         return
       }
-
-      notificationStore.addNotification('Une erreur est survenue lors de la connexion', 'error')
     }
+
+    notificationStore.addNotification('Une erreur est survenue lors de la connexion', 'error')
     console.error(error)
+
+    return
   } finally {
     isLoggingIn.value = false
   }
+
+  router.push((route.query.redirect as string) || '/profile')
 }
 </script>
 

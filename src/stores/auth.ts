@@ -2,7 +2,7 @@ import type { User } from '@/models/user'
 import { useLocalStorage } from '@vueuse/core'
 import { destr } from 'destr'
 import { defineStore } from 'pinia'
-import axios from 'axios'
+import { defaultAxios } from '@/utils/axios'
 import { useFormationsStore } from './formations'
 import { useFormationCategoriesStore } from './formations'
 import { useFormationStore } from './formations'
@@ -24,9 +24,12 @@ export const useAuthStore = defineStore('auth', () => {
   if (user.value === null) {
     // Try to fetch the user from the API. Will fail if the user is not logged in,
     // but we don't care, we will just keep the user set to null.
-    axios.get(`${import.meta.env.VITE_API_URL}/api/me`).then((response) => {
-      user.value = response.data
-    })
+    defaultAxios
+      .get(`/api/me`)
+      .then((response) => {
+        user.value = response.data
+      })
+      .catch(() => null)
   }
 
   /**
@@ -34,25 +37,15 @@ export const useAuthStore = defineStore('auth', () => {
    * @param email - The email of the user.
    * @param password - The password of the user.
    * @param remember - Whether to remember the user.
-   * @returns Whether the login was successful.
    */
   const login = async (email: string, password: string, remember: boolean) => {
-    const response = await axios.post<{ user: User }>(
-      `${import.meta.env.VITE_API_URL}/api/login`,
-      {
-        email,
-        password,
-        remember,
-      },
-      {
-        withCredentials: true,
-        withXSRFToken: true,
-      },
-    )
+    const response = await defaultAxios.post<{ user: User }>(`/api/login`, {
+      email,
+      password,
+      remember,
+    })
 
     user.value = response.data.user
-
-    return true
   }
 
   /**
@@ -60,7 +53,7 @@ export const useAuthStore = defineStore('auth', () => {
    */
   const logout = () => {
     user.value = null
-    axios.post(
+    defaultAxios.post(
       `${import.meta.env.VITE_API_URL}/api/logout`,
       {},
       {
@@ -75,7 +68,7 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   const updatePassword = async (input: { password: string; password_confirmation: string }) => {
-    await axios.put(`${import.meta.env.VITE_API_URL}/api/me`, input, {
+    await defaultAxios.put(`${import.meta.env.VITE_API_URL}/api/me`, input, {
       withCredentials: true,
       withXSRFToken: true,
     })

@@ -13,7 +13,7 @@ import CloseIcon from '@/assets/icons/close.svg'
 import { useRoute, useRouter } from 'vue-router'
 import { useFormationStore } from '@/stores/formations'
 import { formatDuration } from '@/utils/time'
-import axios from 'axios'
+import { authenticatedAxios } from '@/utils/axios'
 import { computed, ref } from 'vue'
 import type { FormationQuestion } from '@/models/formation'
 import { useNotificationStore } from '@/stores/notification'
@@ -28,7 +28,7 @@ const notificationStore = useNotificationStore()
 const formationStore = useFormationStore()
 const formation = await formationStore.get(+formationID)
 
-const { data } = await axios.get<{ question: FormationQuestion; courseCompleted: boolean }>(
+const { data } = await authenticatedAxios.get<{ question: FormationQuestion; courseCompleted: boolean }>(
   `/api/formations/${formationID}/question`,
 )
 
@@ -52,7 +52,7 @@ const submit = async () => {
   lastActivity.value = now.value
 
   try {
-    const { data } = await axios.post<{
+    const { data } = await authenticatedAxios.post<{
       trueAnswer: string | boolean
       newQuestion?: FormationQuestion
       spentTime: number

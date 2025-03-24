@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import axios from 'axios'
+import { defaultAxios } from '@/utils/axios'
 import Logo from '@/assets/icons/formasim.svg'
 import ArrowBackIcon from '@/assets/icons/arrow-back.svg'
 import { useNotificationStore } from '@/stores/notification'
@@ -17,7 +17,7 @@ const send = async () => {
   isSending.value = true
   errored.value = false
   try {
-    await axios.post(
+    await defaultAxios.post(
       import.meta.env.VITE_API_URL + '/api/forgot-password',
       { email: email.value },
       {
