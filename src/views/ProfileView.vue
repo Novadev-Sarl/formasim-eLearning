@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useAuthStore } from '@/stores/auth.ts'
-import { useRouter, useRoute } from 'vue-router'
-import { watchEffect, ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { ref } from 'vue'
 
 import DashboardIcon from '@/assets/icons/dashboard.svg'
 import AccountCircleIcon from '@/assets/icons/account-circle.svg'
@@ -15,13 +15,6 @@ import CertificatesList from './ProfileView/CertificatesList.vue'
 
 const auth = useAuthStore()
 const router = useRouter()
-const route = useRoute()
-
-watchEffect(() => {
-  if (!auth.user) {
-    router.replace(`/login?redirect=${route.path}`)
-  }
-})
 
 const selectedTab = ref(0)
 const tabs = [
