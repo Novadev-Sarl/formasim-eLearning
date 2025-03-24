@@ -16,4 +16,5 @@ export default defineConfig({
   server: {
     allowedHosts: [hostname().toLowerCase(), hostname().toLowerCase() + '.local'],
   },
+  base: '/eLearning',
 })
