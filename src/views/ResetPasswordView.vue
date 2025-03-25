@@ -7,10 +7,13 @@ import ArrowBackIcon from '@/assets/icons/arrow-back.svg'
 import { useNotificationStore } from '@/stores/notification'
 import { useRouter } from 'vue-router'
 import { defaultAxios } from '@/utils/axios'
+import { useBreakpoints, breakpointsTailwind } from '@vueuse/core'
 
 const route = useRoute()
 const router = useRouter()
 const notificationStore = useNotificationStore()
+const breakpoints = useBreakpoints(breakpointsTailwind)
+const isMobile = breakpoints.smaller('md')
 
 const password = ref('')
 const passwordConfirmation = ref('')
@@ -76,15 +79,15 @@ const resetPassword = async () => {
 </script>
 
 <template>
-  <main class="flex flex-col items-center justify-center w-screen h-screen bg-neutral-100">
-    <div class="flex flex-col gap-4">
-      <RouterLink to="/login" class="flex items-center gap-2 text-primary">
+  <main class="flex flex-col items-center w-screen h-screen md:justify-center bg-neutral-100">
+    <div class="flex flex-col h-full gap-4 pt-4 md:pt-0 md:h-fit">
+      <RouterLink to="/login" class="flex items-center gap-2 px-4 text-primary md:px-0">
         <ArrowBackIcon class="size-4" />
         Retour au formulaire de connexion
       </RouterLink>
 
       <div
-        class="flex flex-col max-w-2xl gap-6 p-8 bg-white rounded-md ring w-fit ring-neutral-300"
+        class="flex flex-col h-full gap-6 p-4 bg-white rounded-md md:max-w-2xl md:p-8 ring w-fit ring-neutral-300 md:h-fit"
       >
         <!-- Header -->
         <div>
@@ -129,9 +132,17 @@ const resetPassword = async () => {
             type="submit"
             :disabled="loading"
             :class="{ 'opacity-50': loading }"
-            class="self-end text-white action bg-primary"
+            class="self-end text-white action bg-primary max-md:w-full"
           >
-            {{ loading ? 'Réinitialisation en cours...' : 'Réinitialiser le mot de passe &rarr;' }}
+            {{
+              loading
+                ? isMobile
+                  ? 'Réinitialisation...'
+                  : 'Réinitialisation en cours...'
+                : isMobile
+                  ? 'Réinitialiser'
+                  : 'Réinitialiser le mot de passe &rarr;'
+            }}
           </button>
         </form>
       </div>

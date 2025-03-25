@@ -4,6 +4,10 @@ import { defaultAxios } from '@/utils/axios'
 import Logo from '@/assets/icons/formasim.svg'
 import ArrowBackIcon from '@/assets/icons/arrow-back.svg'
 import { useNotificationStore } from '@/stores/notification'
+import { useBreakpoints, breakpointsTailwind } from '@vueuse/core'
+
+const breakpoints = useBreakpoints(breakpointsTailwind)
+const isMobile = breakpoints.smaller('md')
 
 const notificationStore = useNotificationStore()
 
@@ -48,14 +52,14 @@ const send = async () => {
 
 <template>
   <main class="flex flex-col items-center justify-center w-screen h-screen bg-neutral-100">
-    <div class="flex flex-col gap-4">
-      <RouterLink to="/login" class="flex items-center gap-2 text-primary">
+    <div class="flex flex-col h-full gap-4 pt-4 md:pt-0 md:h-fit">
+      <RouterLink to="/login" class="flex items-center gap-2 px-4 text-primary md:px-0">
         <ArrowBackIcon class="size-4" />
         Retour au formulaire de connexion
       </RouterLink>
 
       <div
-        class="flex flex-col max-w-2xl gap-6 p-8 bg-white rounded-md ring w-fit ring-neutral-300"
+        class="flex flex-col h-full gap-6 p-8 bg-white rounded-md md:max-w-2xl ring w-fit ring-neutral-300"
       >
         <!-- Header -->
         <div>
@@ -85,14 +89,16 @@ const send = async () => {
             type="submit"
             :disabled="isSending"
             :class="{ 'opacity-50': isSending }"
-            class="self-end text-white action bg-primary"
+            class="self-end text-white action bg-primary max-md:w-full"
           >
             {{
               isSending
                 ? 'Envoi en cours...'
                 : sent
                   ? 'E-mail envoyé'
-                  : 'Réinitialiser le mot de passe &rarr;'
+                  : isMobile
+                    ? 'Réinitialiser'
+                    : 'Réinitialiser le mot de passe &rarr;'
             }}
           </button>
         </form>
