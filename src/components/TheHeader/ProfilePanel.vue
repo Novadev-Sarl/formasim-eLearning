@@ -42,7 +42,7 @@ const auth = useAuthStore()
         <img
           :src="auth.user?.image"
           alt="Profile"
-          class="rounded-full shadow-md size-12"
+          class="object-cover rounded-full shadow-md size-12"
           v-if="auth.user?.image"
         />
         <div
