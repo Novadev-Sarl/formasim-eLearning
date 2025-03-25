@@ -28,6 +28,8 @@ export type FormationUser = {
   formation?: Formation
   created_at: string
   completed_at: string | null
+  correct_answers: number
+  total_questions: number
 }
 
 export type FormationCategory = {
