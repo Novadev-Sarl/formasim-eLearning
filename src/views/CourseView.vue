@@ -100,6 +100,7 @@ const nextQuestion = async () => {
     }>(`/api/formations/${formationID}/question`)
 
     answerData.value.newQuestion = data.question
+    showSummary.value = false
   }
 
   question.value = answerData.value.newQuestion
