@@ -24,12 +24,12 @@ defineProps<{
         <h3 class="text-lg font-semibold">{{ formation.name }}</h3>
 
         <div class="flex flex-row justify-between text-sm">
-          <div class="flex flex-row gap-2">
+          <div class="flex flex-row items-center gap-2">
             <FormatListNumberedIcon class="size-6 text-primary" />
             <span class="text-neutral-600">10 chapitres</span>
           </div>
 
-          <div class="flex flex-row gap-2 mr-5">
+          <div class="flex flex-row items-center gap-2 mr-5">
             <ScheduleIcon class="size-6 text-primary" />
             <span class="text-neutral-600">{{ formatDuration(formation.duration) }}</span>
           </div>

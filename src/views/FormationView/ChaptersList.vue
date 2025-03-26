@@ -16,13 +16,13 @@ defineProps<{
 
 <template>
   <!-- Informations -->
-  <div class="flex flex-row gap-4 text-sm">
-    <div class="flex flex-row gap-2">
+  <div class="flex flex-row items-center gap-4 text-sm">
+    <div class="flex flex-row items-center gap-2">
       <FormatListNumberedIcon class="size-6 text-primary" />
       <span class="text-gray-600">{{ completedChapters }}/{{ chapters.length }} complétés</span>
     </div>
     <span class="font-bold text-neutral-400">·</span>
-    <div class="flex flex-row gap-2">
+    <div class="flex flex-row items-center gap-2">
       <ScheduleIcon class="size-6 text-primary" />
       <span class="text-gray-600">{{ formatDuration(remainingTime ?? 0) }} restantes</span>
     </div>
