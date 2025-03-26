@@ -26,7 +26,7 @@ defineProps<{
         <div class="flex flex-row justify-between text-sm">
           <div class="flex flex-row items-center gap-2">
             <FormatListNumberedIcon class="size-6 text-primary" />
-            <span class="text-neutral-600">10 chapitres</span>
+            <span class="text-neutral-600">{{ formation.chapters_count }} chapitres</span>
           </div>
 
           <div class="flex flex-row items-center gap-2 mr-5">
