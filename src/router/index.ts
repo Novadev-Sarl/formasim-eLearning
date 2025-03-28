@@ -23,7 +23,14 @@ const router = createRouter({
   },
 })
 
-const authenticatedPages = ['/profile', '/formations', '/formations/:id', '/formations/:id/course']
+// Manually redirect to the login page if the user is not authenticated on protected pages
+
+export const authenticatedPages = [
+  '/profile',
+  '/formations',
+  '/formations/:id',
+  '/formations/:id/course',
+]
 
 router.beforeEach((to) => {
   const auth = useAuthStore()

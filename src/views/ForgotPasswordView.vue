@@ -20,7 +20,9 @@ const sent = ref(false)
 const send = async () => {
   isSending.value = true
   errored.value = false
+
   try {
+    // Send the forgot password request
     await defaultAxios.post(
       import.meta.env.VITE_API_URL + '/api/forgot-password',
       { email: email.value },
@@ -30,19 +32,22 @@ const send = async () => {
       },
     )
   } catch (err) {
+    // Display an error notification if something went wrong
     notificationStore.addNotification(
       "Une erreur est survenue lors de l'envoi de l'e-mail de réinitialisation du mot de passe.",
       'error',
     )
+    // Log the error details
     console.error(err)
     errored.value = true
     return
   } finally {
+    // Allow new submissions
     isSending.value = false
   }
 
+  // Display a success notification
   sent.value = true
-
   notificationStore.addNotification(
     "L'e-mail de réinitialisation du mot de passe a été envoyé à votre adresse e-mail.",
     'success',

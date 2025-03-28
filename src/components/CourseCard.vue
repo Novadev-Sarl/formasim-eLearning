@@ -7,7 +7,16 @@ import ArrowForwardIcon from '@/assets/icons/arrow-forward.svg'
 import DownloadIcon from '@/assets/icons/download.svg'
 
 defineProps<{
+  /**
+   * The formation to display.
+   */
   formation: Formation
+
+  /**
+   * The date the formation was completed.
+   * This is actually not taken into account. The only purpose of this prop is to be nullable,
+   * so that the component knows when to display the "Suivre le cours" button or the "Télécharger le certificat" button.
+   */
   completedAt?: string
 }>()
 </script>

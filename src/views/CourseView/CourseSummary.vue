@@ -68,6 +68,9 @@ import ArrowBackIcon from '@/assets/icons/arrow-back.svg'
 import StarIcon from '@/assets/icons/star.svg'
 
 defineEmits<{
+  /**
+   * Emitted when the user wants to continue the formation.
+   */
   (e: 'continue'): void
 }>()
 

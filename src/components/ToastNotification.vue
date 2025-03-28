@@ -4,6 +4,9 @@ import XCircleIcon from '@/assets/icons/cancel.svg'
 import CloseIcon from '@/assets/icons/close.svg'
 
 const props = defineProps<{
+  /**
+   * The notification to display.
+   */
   notification: {
     message: string
     type: 'success' | 'error'
@@ -11,6 +14,9 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
+  /**
+   * Emitted when the notification should be closed.
+   */
   (e: 'close'): void
 }>()
 </script>

@@ -3,26 +3,33 @@ import CourseCard from '@/components/CourseCard.vue'
 import type { Formation } from '@/models/formation'
 import { authenticatedAxios } from '@/utils/axios'
 
-const { data: assignedFormations } = await authenticatedAxios.get<
-  {
-    formation: Formation
-    completed_at: string | null
-  }[]
->('/api/me/formations')
+// Fetch the formations assigned to the user to dispaly statistics
+const [
+  { data: assignedFormations },
+  { data: completedFormations },
+  { data: uncompletedFormations },
+] = await Promise.all([
+  authenticatedAxios.get<
+    {
+      formation: Formation
+      completed_at: string | null
+    }[]
+  >('/api/me/formations'),
 
-const { data: completedFormations } = await authenticatedAxios.get<
-  {
-    formation: Formation
-    completed_at: string | null
-  }[]
->('/api/me/formations?completed=true')
+  authenticatedAxios.get<
+    {
+      formation: Formation
+      completed_at: string | null
+    }[]
+  >('/api/me/formations?completed=true'),
 
-const { data: uncompletedFormations } = await authenticatedAxios.get<
-  {
-    formation: Formation
-    completed_at: string | null
-  }[]
->('/api/me/formations?completed=false&started=true')
+  authenticatedAxios.get<
+    {
+      formation: Formation
+      completed_at: string | null
+    }[]
+  >('/api/me/formations?completed=false&started=true'),
+])
 
 const formations = [...uncompletedFormations, ...assignedFormations].slice(0, 3)
 

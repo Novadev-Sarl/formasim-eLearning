@@ -5,11 +5,15 @@ import { ref } from 'vue'
 
 export const useFormationsStore = defineStore('formations', () => {
   /**
-   * Liste des formations disponibles. Est mise à jour automatiquement lorsque la fonction `get` est appelée,
-   * puis est retournée pour chaque appel subséquent.
+   * List of available formations. Is automatically updated when the `get` function is called,
+   * then returned for each subsequent call.
    */
   const formations = ref<Formation[] | null>(null)
 
+  /**
+   * Get the list of available formations.
+   * @returns The list of available formations.
+   */
   const get = async () => {
     if (formations.value) return formations.value
 
@@ -19,6 +23,9 @@ export const useFormationsStore = defineStore('formations', () => {
     return data
   }
 
+  /**
+   * Clear the list of available formations.
+   */
   const clear = () => {
     formations.value = null
   }
@@ -28,11 +35,15 @@ export const useFormationsStore = defineStore('formations', () => {
 
 export const useFormationCategoriesStore = defineStore('formationCategories', () => {
   /**
-   * Liste des catégories de formations disponibles. Est mise à jour automatiquement lorsque la fonction `get` est appelée,
-   * puis est retournée pour chaque appel subséquent.
+   * List of available formation categories. Is automatically updated when the `get` function is called,
+   * then returned for each subsequent call.
    */
   const formationCategories = ref<FormationCategory[] | null>(null)
 
+  /**
+   * Get the list of available formation categories.
+   * @returns The list of available formation categories.
+   */
   const get = async () => {
     if (formationCategories.value) return formationCategories.value
 
@@ -42,6 +53,9 @@ export const useFormationCategoriesStore = defineStore('formationCategories', ()
     return data
   }
 
+  /**
+   * Clear the list of available formation categories.
+   */
   const clear = () => {
     formationCategories.value = null
   }
@@ -51,13 +65,19 @@ export const useFormationCategoriesStore = defineStore('formationCategories', ()
 
 export const useFormationStore = defineStore('formation', () => {
   /**
-   * Détails d'une formation spécifique. Est mise à jour automatiquement lorsque la fonction `get` est appelée,
-   * puis est retournée pour chaque appel subséquent.
+   * Details of a specific formation. Is automatically updated when the `get` function is called,
+   * then returned for each subsequent call.
    *
-   * Les formations sont stockées dans une HashMap, indexées par leur identifiant.
+   * Formations are stored in a HashMap, indexed by their ID.
    */
   const formation = ref<Map<number, DetailedFormation>>(new Map())
 
+  /**
+   * Get the details of a specific formation.
+   * @param id - The ID of the formation to get.
+   * @param force - Whether to force the re-fetch of the formation.
+   * @returns The details of the formation.
+   */
   const get = async (id: number, force = false) => {
     if (formation.value.has(id) && !force) return formation.value.get(id)!
 
@@ -67,6 +87,9 @@ export const useFormationStore = defineStore('formation', () => {
     return data
   }
 
+  /**
+   * Clear the details of all formations.
+   */
   const clear = () => {
     formation.value = new Map()
   }

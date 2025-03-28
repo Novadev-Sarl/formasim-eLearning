@@ -26,33 +26,72 @@ const formationID = route.params.id
 
 const notificationStore = useNotificationStore()
 const formationStore = useFormationStore()
+// Get formation details
 const formation = await formationStore.get(+formationID)
 
+// Get the current question
 const { data } = await authenticatedAxios.get<{
   question: FormationQuestion
   courseCompleted: boolean
 }>(`/api/formations/${formationID}/question`)
 
+/**
+ * @var question The current question.
+ */
 const question = ref(data.question)
+
+/**
+ * @var courseCompleted Whether the course is completed.
+ */
 const courseCompleted = ref(data.courseCompleted)
+
+/**
+ * @var showCongratulationModal Whether the congratulation modal should be shown.
+ */
 const showCongratulationModal = ref(false)
 
+/**
+ * @var answer The selected answer to the question.
+ */
 const answer = ref<string | null>(null)
+
+/**
+ * @var spentTime The time spent on the question.
+ */
 const spentTime = ref<number>(formation.formation_user.spent_time)
 
+/**
+ * @var lastActivity The last activity of the user.
+ */
 const lastActivity = ref(new Date())
+
+/**
+ * @var now The current date.
+ */
 const now = useNow()
 
 const loadingAnswer = ref(false)
+/**
+ * @var answerData The actual answer to the quesiton. Null if the answer is not validated yet.
+ */
 const answerData = ref<{
   trueAnswer: string
   newQuestion?: FormationQuestion
 } | null>(null)
+
+/**
+ * Submit the answer to the question.
+ */
 const submit = async () => {
+  // Prevent multiple submissions
+  if (loadingAnswer.value) return
   loadingAnswer.value = true
+
+  // Update the last activity of the user
   lastActivity.value = now.value
 
   try {
+    // Submit the answer to the question
     const { data } = await authenticatedAxios.post<{
       trueAnswer: string | boolean
       newQuestion?: FormationQuestion
@@ -62,39 +101,57 @@ const submit = async () => {
       answer: answer.value,
     })
 
+    // Update the answer data
     answerData.value = {
       trueAnswer: `${data.trueAnswer}`,
       newQuestion: data.newQuestion,
     }
+
+    // Update the spent time
     spentTime.value = data.spentTime
 
+    // Show the congratulation modal if the course was just completed
     if (data.courseCompleted && !courseCompleted.value) {
       showCongratulationModal.value = true
     }
   } catch (error) {
+    // Display an error notification if something went wrong
     notificationStore.addNotification(
       'Une erreur est survenue lors de la vérification de la réponse',
       'error',
     )
+    // Log the error details
     console.error(error)
   } finally {
+    // Allow new submissions
     loadingAnswer.value = false
   }
 }
 
+/**
+ * @var showSummary Whether the course summary should be shown.
+ */
 const showSummary = ref(false)
+
+/**
+ * Go to the next question.
+ */
 const nextQuestion = async () => {
   if (!answerData.value) {
+    // Display a warning if no answer data is available
     console.warn('No answer data')
     return
   }
 
+  // If answer data is available but no new question is available, this means the user completed all questions.
   if (!answerData.value.newQuestion) {
+    // If the summary is not already shown, show it and stop the function
     if (!showSummary.value) {
       showSummary.value = true
       return
     }
 
+    // If the summary is already shown, hide the summary, fetch the new question and show it to the user
     const { data } = await authenticatedAxios.get<{
       question: FormationQuestion
     }>(`/api/formations/${formationID}/question`)
@@ -103,11 +160,15 @@ const nextQuestion = async () => {
     showSummary.value = false
   }
 
+  // Update the question and empty the answer
   question.value = answerData.value.newQuestion
   answer.value = null
   answerData.value = null
 }
 
+/**
+ * @var remainingTime The remaining time of the course.
+ */
 const remainingTime = computed(() => {
   const remainingTime = formation.duration - spentTime.value / 60
   return remainingTime > 0 ? remainingTime : 0

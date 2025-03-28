@@ -20,11 +20,18 @@ const passwordConfirmation = ref('')
 const loading = ref(false)
 const errored = ref(false)
 
+/**
+ * Reset the password of the user.
+ */
 const resetPassword = async () => {
+  // Prevent multiple submissions
   loading.value = true
+
+  // Reset the error state
   errored.value = false
 
   try {
+    // Try to reset the password
     await defaultAxios.post(
       import.meta.env.VITE_API_URL + '/api/reset-password',
       {
@@ -39,6 +46,7 @@ const resetPassword = async () => {
     )
   } catch (err) {
     if (err instanceof AxiosError) {
+      // Display an error notification if the password does not match the required format
       if (err.status === 422) {
         notificationStore.addNotification(
           err.response?.data?.message ||
@@ -50,6 +58,7 @@ const resetPassword = async () => {
         return
       }
 
+      // Display an error notification if something went wrong
       notificationStore.addNotification(
         `Une erreur est survenue (${err.response?.data?.message}). Veuillez réessayer plus tard.`,
         'error',
@@ -59,6 +68,7 @@ const resetPassword = async () => {
       return
     }
 
+    // Display an error notification if something went wrong outside of the AxiosError
     notificationStore.addNotification(
       'Une erreur est survenue. Veuillez réessayer plus tard.',
       'error',
@@ -66,14 +76,17 @@ const resetPassword = async () => {
     errored.value = true
     console.error(err)
   } finally {
+    // Allow new submissions
     loading.value = false
   }
 
+  // Display a success notification
   notificationStore.addNotification(
     'Le mot de passe a été réinitialisé avec succès. Vous pouvez maintenant vous connecter.',
     'success',
   )
 
+  // Redirect to the login page on success
   router.push('/login')
 }
 </script>

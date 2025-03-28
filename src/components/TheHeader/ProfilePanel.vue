@@ -6,6 +6,9 @@ import { useRouter } from 'vue-router'
 import { vOnClickOutside } from '@vueuse/components'
 
 defineEmits<{
+  /**
+   * Emitted when the profile panel should be closed.
+   */
   (e: 'close'): void
 }>()
 

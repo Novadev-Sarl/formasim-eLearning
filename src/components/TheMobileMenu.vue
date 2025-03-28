@@ -10,6 +10,9 @@ import OpenInNewIcon from '@/assets/icons/open-in-new.svg'
 const router = useRouter()
 
 const { links } = defineProps<{
+  /**
+   * The links to display in the mobile menu.
+   */
   links: {
     label: string
     to: string
@@ -21,6 +24,9 @@ const navigationMenuShown = defineModel<boolean>()
 
 const headerRef = ref<HTMLElement>()
 
+/**
+ * @url https://vuejs.org/api/composition-api-lifecycle.html#onmounted
+ */
 onMounted(() => {
   headerRef.value = document.getElementsByTagName('header')[0]
 })

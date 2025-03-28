@@ -16,7 +16,14 @@ import CertificatesList from './ProfileView/CertificatesList.vue'
 const auth = useAuthStore()
 const router = useRouter()
 
+/**
+ * @var selectedTab The current active tab of the profile view.
+ */
 const selectedTab = ref(0)
+
+/**
+ * @var tabs The tabs of the profile view.
+ */
 const tabs = [
   {
     label: 'Tableau de bord',

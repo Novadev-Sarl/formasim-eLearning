@@ -7,9 +7,24 @@ import FormatListNumberedIcon from '@/assets/icons/format-list-numbered.svg'
 import ScheduleIcon from '@/assets/icons/schedule.svg'
 
 defineProps<{
+  /**
+   * The formation to display.
+   */
   formation: DetailedFormation
+
+  /**
+   * The chapters to display.
+   */
   chapters: { id: number; name: string }[]
+
+  /**
+   * The number of chapters that have already been completed by the user.
+   */
   completedChapters: number
+
+  /**
+   * The remaining time in the formation.
+   */
   remainingTime: number
 }>()
 </script>

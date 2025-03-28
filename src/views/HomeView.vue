@@ -6,6 +6,9 @@ import { useTemplateRef } from 'vue'
 
 const overview = useTemplateRef('overview')
 
+/**
+ * Scroll to the overview section.
+ */
 const scrollToOverview = () => {
   overview.value?.scrollIntoView({ behavior: 'smooth' })
 }
