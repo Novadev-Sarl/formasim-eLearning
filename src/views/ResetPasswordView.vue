@@ -7,21 +7,31 @@ import ArrowBackIcon from '@/assets/icons/arrow-back.svg'
 import { useNotificationStore } from '@/stores/notification'
 import { useRouter } from 'vue-router'
 import { defaultAxios } from '@/utils/axios'
+import { useBreakpoints, breakpointsTailwind } from '@vueuse/core'
 
 const route = useRoute()
 const router = useRouter()
 const notificationStore = useNotificationStore()
+const breakpoints = useBreakpoints(breakpointsTailwind)
+const isMobile = breakpoints.smaller('md')
 
 const password = ref('')
 const passwordConfirmation = ref('')
 const loading = ref(false)
 const errored = ref(false)
 
+/**
+ * Reset the password of the user.
+ */
 const resetPassword = async () => {
+  // Prevent multiple submissions
   loading.value = true
+
+  // Reset the error state
   errored.value = false
 
   try {
+    // Try to reset the password
     await defaultAxios.post(
       import.meta.env.VITE_API_URL + '/api/reset-password',
       {
@@ -36,6 +46,7 @@ const resetPassword = async () => {
     )
   } catch (err) {
     if (err instanceof AxiosError) {
+      // Display an error notification if the password does not match the required format
       if (err.status === 422) {
         notificationStore.addNotification(
           err.response?.data?.message ||
@@ -47,6 +58,7 @@ const resetPassword = async () => {
         return
       }
 
+      // Display an error notification if something went wrong
       notificationStore.addNotification(
         `Une erreur est survenue (${err.response?.data?.message}). Veuillez réessayer plus tard.`,
         'error',
@@ -56,6 +68,7 @@ const resetPassword = async () => {
       return
     }
 
+    // Display an error notification if something went wrong outside of the AxiosError
     notificationStore.addNotification(
       'Une erreur est survenue. Veuillez réessayer plus tard.',
       'error',
@@ -63,28 +76,31 @@ const resetPassword = async () => {
     errored.value = true
     console.error(err)
   } finally {
+    // Allow new submissions
     loading.value = false
   }
 
+  // Display a success notification
   notificationStore.addNotification(
     'Le mot de passe a été réinitialisé avec succès. Vous pouvez maintenant vous connecter.',
     'success',
   )
 
+  // Redirect to the login page on success
   router.push('/login')
 }
 </script>
 
 <template>
-  <main class="flex flex-col items-center justify-center w-screen h-screen bg-neutral-100">
-    <div class="flex flex-col gap-4">
-      <RouterLink to="/login" class="flex items-center gap-2 text-primary">
+  <main class="flex flex-col items-center w-screen h-screen md:justify-center bg-neutral-100">
+    <div class="flex flex-col h-full gap-4 pt-4 md:pt-0 md:h-fit">
+      <RouterLink to="/login" class="flex items-center gap-2 px-4 text-primary md:px-0">
         <ArrowBackIcon class="size-4" />
         Retour au formulaire de connexion
       </RouterLink>
 
       <div
-        class="flex flex-col max-w-2xl gap-6 p-8 bg-white rounded-md ring w-fit ring-neutral-300"
+        class="flex flex-col h-full gap-6 p-4 bg-white rounded-md md:max-w-2xl md:p-8 ring w-fit ring-neutral-300 md:h-fit"
       >
         <!-- Header -->
         <div>
@@ -129,9 +145,17 @@ const resetPassword = async () => {
             type="submit"
             :disabled="loading"
             :class="{ 'opacity-50': loading }"
-            class="self-end text-white action bg-primary"
+            class="self-end text-white action bg-primary max-md:w-full"
           >
-            {{ loading ? 'Réinitialisation en cours...' : 'Réinitialiser le mot de passe &rarr;' }}
+            {{
+              loading
+                ? isMobile
+                  ? 'Réinitialisation...'
+                  : 'Réinitialisation en cours...'
+                : isMobile
+                  ? 'Réinitialiser'
+                  : 'Réinitialiser le mot de passe &rarr;'
+            }}
           </button>
         </form>
       </div>

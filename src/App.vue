@@ -13,23 +13,42 @@ import LoadingIndicator from '@/components/LoadingIndicator.vue'
 
 const route = useRoute()
 const notificationStore = useNotificationStore()
+/**
+ * @var fullscreenRoutes The routes that should be displayed in fullscreen mode. (no header or footer)
+ */
 const fullscreenRoutes = ['/login', '/reset-password', '/forgot-password']
 
+/**
+ * @var isFullscreenRoute Whether the current route is a fullscreen route.
+ */
 const isFullscreenRoute = computed(() => fullscreenRoutes.includes(route.path))
+
+/**
+ * @var header The header element.
+ */
 const header = useTemplateRef('header')
 const { height: headerHeight } = useElementSize(header)
 
 const error = ref(false)
+/**
+ * Is executed when an error isn't captured by any children.
+ * @url https://vuejs.org/api/composition-api-lifecycle.html#onerrorcaptured
+ */
 onErrorCaptured((err) => {
   let additionalMessage = ''
 
+  // log the error for debugging purposes
   console.error(`Error: ${err.message}\n  at ${err.stack?.replace(/\n/g, '\n  at ')}`)
 
+  // If the error has a code, add it to the additional message
   if ('code' in err) {
     additionalMessage += `\n${err.code}`
   }
 
+  // Display the error message
   error.value = true
+
+  // Display a notification
   notificationStore.addNotification(
     'Une erreur est survenue lors du chargement de la page (Code: ' + additionalMessage + ')',
     'error',

@@ -31,21 +31,31 @@ const password = ref('')
 const remember = ref(false)
 
 const isLoggingIn = ref(false)
-const login = async () => {
-  if (isLoggingIn.value) return
 
+/**
+ * Login the user.
+ */
+const login = async () => {
+  // Prevent multiple logins
+  if (isLoggingIn.value) return
   isLoggingIn.value = true
+
+  // Reset the error state
   errored.value = false
+
+  // Try to login the user
   try {
     await auth.login(email.value, password.value, remember.value)
   } catch (error) {
     if (error instanceof AxiosError) {
+      // Display an error notification if the email or password is incorrect
       if (error.response?.status === 401) {
         notificationStore.addNotification('Email ou mot de passe incorrect', 'error')
         errored.value = true
         return
       }
 
+      // Display an error notification if the email or password does not match the required format
       if (error.response?.status === 422) {
         notificationStore.addNotification(
           'Veuillez vérifier vos informations de connexion',
@@ -56,14 +66,17 @@ const login = async () => {
       }
     }
 
+    // Display an error notification if something went wrong
     notificationStore.addNotification('Une erreur est survenue lors de la connexion', 'error')
     console.error(error)
 
     return
   } finally {
+    // Allow new logins
     isLoggingIn.value = false
   }
 
+  // Redirect to the intended page or the profile page on success
   router.push((route.query.redirect as string) || '/profile')
 }
 </script>

@@ -32,6 +32,9 @@ const activeTab = ref(0)
 const tabs = computed(() => {
   const tabs = ['Tous']
 
+  /**
+   * Add the categories of the completed formations to the tabs.
+   */
   completedFormations.value.forEach(({ formation }) => {
     if (!formation) {
       throw new Error('Formation not in response')
@@ -46,6 +49,9 @@ const tabs = computed(() => {
 })
 
 const filteredCompletedFormations = computed(() => {
+  /**
+   * Filter the completed formations based on the active tab.
+   */
   if (activeTab.value === 0) {
     return completedFormations.value
   }
@@ -60,6 +66,10 @@ const filteredCompletedFormations = computed(() => {
 })
 
 const loadingCertificates = ref<number[]>([])
+/**
+ * Download a certificate for a formation.
+ * @param formationId - The ID of the formation to download the certificate for.
+ */
 const downloadCertificate = async (formationId: number) => {
   // Prevent multiple downloads of the same certificate
   if (loadingCertificates.value.includes(formationId)) return

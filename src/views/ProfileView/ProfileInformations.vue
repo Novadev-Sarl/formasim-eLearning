@@ -13,17 +13,23 @@ const passwordConfirmation = ref('')
 const passwordInput = ref<HTMLInputElement | null>(null)
 const passwordConfirmationInput = ref<HTMLInputElement | null>(null)
 
+/**
+ * @var rules The rules to validate the password.
+ */
 const rules = [
   {
+    // Verify that the password is at least 8 characters long
     validator: (value: string) => value.length >= 8,
     message: 'Le mot de passe doit contenir au moins 8 caractères',
   },
   {
+    // Verify that the password contains at least one uppercase letter, one lowercase letter and one number
     validator: (value: string) => value.match(/^((?=.*[A-Za-z0-9])(?=.*[A-Z])(?=.*[a-z]))^.*$/),
     message:
       'Le mot de passe doit contenir au moins une lettre majuscule, une lettre minuscule et un chiffre',
   },
   {
+    // Verify that the password and the confirmation are the same
     validator: (value: string) => value === passwordConfirmation.value,
     message: 'Les mots de passe ne correspondent pas',
   },
@@ -35,15 +41,18 @@ const savePassword = async () => {
     return
   }
 
+  // Reset the custom validity and report the validity of the password input
   passwordInput.value.setCustomValidity('')
   passwordInput.value.reportValidity()
 
   // Force a reflow by accessing offsetWidth. This ensures the invalid: class is removed
   void passwordInput.value.offsetWidth
 
+  // Check if the password is valid
   const error = rules.find((rule) => !rule.validator(password.value))
 
   if (error) {
+    // Set the custom validity and report the validity of the password input
     passwordInput.value.setCustomValidity(error.message)
     passwordInput.value.reportValidity()
 
@@ -51,15 +60,20 @@ const savePassword = async () => {
   }
 
   try {
+    // Update the password
     await auth.updatePassword({
       password: password.value,
       password_confirmation: passwordConfirmation.value,
     })
 
+    // Display a success notification
     notificationStore.addNotification('Mot de passe mis à jour avec succès', 'success')
+
+    // Reset the password inputs
     password.value = ''
     passwordConfirmation.value = ''
   } catch (error) {
+    // If the password is invalid, display an error notification
     if (error instanceof AxiosError) {
       if (error.response?.status === 400) {
         notificationStore.addNotification(error.response?.data.message, 'error')
@@ -67,6 +81,7 @@ const savePassword = async () => {
       }
     }
 
+    // Display an error notification
     notificationStore.addNotification(
       'Une erreur est survenue lors de la mise à jour du mot de passe',
       'error',

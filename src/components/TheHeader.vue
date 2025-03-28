@@ -18,6 +18,9 @@ import { useAuthStore } from '@/stores/auth'
 
 const breakpoints = useBreakpoints(breakpointsTailwind)
 
+/**
+ * @var isDesktop - Whether the screen is larger than 'lg' breakpoint.
+ */
 const isDesktop = computed(() => breakpoints.greater('lg').value)
 const { width: windowWidth } = useWindowSize()
 
@@ -64,7 +67,7 @@ const { play: play3, reverse: reverse3 } = useAnimate(
 )
 
 /**
- * @var {boolean} played - Whether the burger menu has already been played.
+ * @var played - Whether the burger menu has already been played.
  * This allows to avoid playing the animation twice, while still keeping the animation paused on page load
  */
 const played = ref(false)
@@ -82,18 +85,34 @@ watch(navigationMenuShown, () => {
   }
 })
 
+/**
+ * @var profilePanelTop - The top position of the profile panel.
+ * Computed to be the bottom of the profile button + 10px
+ */
 const profilePanelTop = computed(() => {
   if (!profileButton.value) return 0
   return profileButton.value.offsetTop + profileButton.value.clientHeight + 10
 })
 
+/**
+ * @var profilePanelRight - The right position of the profile panel.
+ * Computed to be the right edge of the profile button
+ */
 const profilePanelRight = computed(() => {
   if (!profileButton.value) return 0
   if (!isDesktop.value) return 0
   return windowWidth.value - profileButton.value.offsetLeft - profileButton.value.clientWidth
 })
 
-const links = [
+/**
+ * @var links - The links to display in the header.
+ */
+const links: {
+  label: string
+  external: boolean
+  to: string
+  authenticated?: boolean
+}[] = [
   { label: 'Accueil', external: false, to: '/', authenticated: false },
   { label: 'Mes cours', external: false, to: '/formations', authenticated: true },
   { label: 'Mon profil', external: false, to: '/profile', authenticated: true },
@@ -205,7 +224,7 @@ const links = [
           <img
             :src="auth.user?.image"
             alt="Profile"
-            class="grid text-xl text-white rounded-full shadow-md cursor-pointer size-12 bg-primary place-items-center"
+            class="object-cover rounded-full shadow-md cursor-pointer size-12"
             ref="profileButton"
             @click="toggleProfilePanel"
             v-if="auth.user?.image"
@@ -249,7 +268,7 @@ const links = [
         </button>
       </div>
 
-      <TheMobileMenu v-model="navigationMenuShown" :links="links" />
+      <TheMobileMenu v-model="navigationMenuShown" :links="links" :test="true" />
     </div>
   </div>
 </template>

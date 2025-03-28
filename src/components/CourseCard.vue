@@ -7,7 +7,16 @@ import ArrowForwardIcon from '@/assets/icons/arrow-forward.svg'
 import DownloadIcon from '@/assets/icons/download.svg'
 
 defineProps<{
+  /**
+   * The formation to display.
+   */
   formation: Formation
+
+  /**
+   * The date the formation was completed.
+   * This is actually not taken into account. The only purpose of this prop is to be nullable,
+   * so that the component knows when to display the "Suivre le cours" button or the "Télécharger le certificat" button.
+   */
   completedAt?: string
 }>()
 </script>
@@ -24,12 +33,12 @@ defineProps<{
         <h3 class="text-lg font-semibold">{{ formation.name }}</h3>
 
         <div class="flex flex-row justify-between text-sm">
-          <div class="flex flex-row gap-2">
+          <div class="flex flex-row items-center gap-2">
             <FormatListNumberedIcon class="size-6 text-primary" />
-            <span class="text-neutral-600">10 chapitres</span>
+            <span class="text-neutral-600">{{ formation.chapters_count }} chapitres</span>
           </div>
 
-          <div class="flex flex-row gap-2 mr-5">
+          <div class="flex flex-row items-center gap-2 mr-5">
             <ScheduleIcon class="size-6 text-primary" />
             <span class="text-neutral-600">{{ formatDuration(formation.duration) }}</span>
           </div>

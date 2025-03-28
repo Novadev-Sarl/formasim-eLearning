@@ -18,24 +18,23 @@ const activeTab = ref(0)
 const tabs = ['Tous', 'Cours actifs', 'Cours terminés']
 const formations = ref<SelfFormation[]>([])
 const formationsLoading = ref(0)
+
+/**
+ * Watch the active tab and fetch the formations based on the active tab.
+ */
 watch(
   activeTab,
   async () => {
     try {
       formationsLoading.value++
-      if (activeTab.value === 0) {
-        formations.value = await authenticatedAxios
-          .get<SelfFormation[]>(`/api/me/formations?started=true`)
-          .then((res) => res.data)
-      } else if (activeTab.value === 1) {
-        formations.value = await authenticatedAxios
-          .get<SelfFormation[]>(`/api/me/formations?started=true&completed=false`)
-          .then((res) => res.data)
-      } else {
-        formations.value = await authenticatedAxios
-          .get<SelfFormation[]>(`/api/me/formations?completed=true`)
-          .then((res) => res.data)
-      }
+      const params = new URLSearchParams({
+        started: activeTab.value <= 1 ? 'true' : '',
+        completed: activeTab.value === 0 ? '' : activeTab.value === 2 ? 'true' : 'false',
+      })
+
+      formations.value = await authenticatedAxios
+        .get<SelfFormation[]>(`/api/me/formations?${params}`)
+        .then((res) => res.data)
     } finally {
       formationsLoading.value--
     }

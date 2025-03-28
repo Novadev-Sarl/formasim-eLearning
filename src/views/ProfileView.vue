@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useAuthStore } from '@/stores/auth.ts'
-import { useRouter, useRoute } from 'vue-router'
-import { watchEffect, ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { ref } from 'vue'
 
 import DashboardIcon from '@/assets/icons/dashboard.svg'
 import AccountCircleIcon from '@/assets/icons/account-circle.svg'
@@ -15,15 +15,15 @@ import CertificatesList from './ProfileView/CertificatesList.vue'
 
 const auth = useAuthStore()
 const router = useRouter()
-const route = useRoute()
 
-watchEffect(() => {
-  if (!auth.user) {
-    router.replace(`/login?redirect=${route.path}`)
-  }
-})
-
+/**
+ * @var selectedTab The current active tab of the profile view.
+ */
 const selectedTab = ref(0)
+
+/**
+ * @var tabs The tabs of the profile view.
+ */
 const tabs = [
   {
     label: 'Tableau de bord',
@@ -62,7 +62,7 @@ const tabs = [
             <img
               :src="auth.user?.image"
               alt="Profile"
-              class="rounded-full shadow-md size-16"
+              class="object-cover rounded-full shadow-md size-16"
               v-if="auth.user?.image"
             />
             <div
@@ -116,7 +116,7 @@ const tabs = [
         </div>
       </aside>
 
-      <div class="flex flex-col gap-4 items-stretch grow">
+      <div class="flex flex-col items-stretch gap-4 grow">
         <h1 class="text-2xl font-bold">{{ tabs[selectedTab].label }}</h1>
 
         <!-- Tab content with suspense and loading indication -->
@@ -127,7 +127,7 @@ const tabs = [
             <div class="flex items-center justify-center grow">
               <div class="flex flex-col items-center gap-4 p-8 rounded-lg ring-1 ring-neutral-100">
                 <div
-                  class="w-8 h-8 border-4 border-primary/20 border-t-primary rounded-full animate-spin"
+                  class="w-8 h-8 border-4 rounded-full border-primary/20 border-t-primary animate-spin"
                 ></div>
                 <span class="text-base font-medium text-neutral-600">Chargement...</span>
               </div>

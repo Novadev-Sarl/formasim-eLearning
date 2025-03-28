@@ -2,8 +2,15 @@
 import { RouterLink } from 'vue-router'
 
 defineProps<{
+  /**
+   * The items to display in the breadcrumbs.
+   */
   items: {
     name: string
+
+    /**
+     * Absolute url to the item.
+     */
     to: string
   }[]
 }>()

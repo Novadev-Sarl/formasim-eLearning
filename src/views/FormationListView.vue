@@ -18,25 +18,47 @@ import Fuse from 'fuse.js'
 const formationsStore = useFormationsStore()
 const formationCategoriesStore = useFormationCategoriesStore()
 
+/**
+ * @var view The current view of the formations list.
+ */
 const view = ref<'grid' | 'list'>('grid')
 
+/**
+ * @var search The search query of the formations list.
+ */
 const search = ref('')
 
+/**
+ * @var filters The selected filters of the formations list.
+ */
 const filters = reactive({
   category: [] as number[],
   lessThan60Min: false,
   lessThan30Min: false,
 })
 
+/**
+ * Reset the filters of the formations list to their default values.
+ */
 const resetFilters = () => {
   filters.category = []
   filters.lessThan60Min = false
   filters.lessThan30Min = false
 }
 
+/**
+ * @var formations The formations to be displayed in the formations list.
+ */
 let formations: Formation[] = []
+
+/**
+ * @var formationCategories The categories of the formations list.
+ */
 let formationCategories: FormationCategory[] = []
 
+/**
+ * Fetch the formations and the formation categories.
+ */
 await Promise.all([
   formationsStore.get().then((res) => {
     formations = res
@@ -46,6 +68,9 @@ await Promise.all([
   }),
 ])
 
+/**
+ * @var filteredFormations The formations to be displayed in the formations list after applying the filters.
+ */
 const filteredFormations = computed(() => {
   let initialFormations = formations.slice()
   if (filters.category.length > 0) {

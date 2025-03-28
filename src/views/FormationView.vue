@@ -22,46 +22,82 @@ const route = useRoute()
 const formationStore = useFormationStore()
 const notificationStore = useNotificationStore()
 
+/**
+ * @var formation The formation to be displayed.
+ */
 const formation = await formationStore.get(+route.params.id).catch(async (err) => {
   if (err instanceof AxiosError) {
     if (err.response?.status === 404) {
-      await router.replace('/404')
+      await router.replace('/formations')
     }
   }
   throw err
 })
 
+/**
+ * @var detailTab The current active tab of the formation view.
+ */
 const detailTab = ref<'Chapitres' | 'Description' | 'Certificat'>('Description')
 
+/**
+ * @var isMobile Whether the current device is a mobile device.
+ */
 const isMobile = useBreakpoints(breakpointsTailwind).smaller('lg')
 
+/**
+ * @url https://vuejs.org/api/composition-api-lifecycle.html#onmounted
+ */
 onMounted(() => {
+  /**
+   * If the current device is a mobile device, set the default detail tab to 'Chapitres'.
+   */
   if (isMobile.value) {
     detailTab.value = 'Chapitres'
   }
 })
 
+/**
+ * @url https://vuejs.org/guide/essentials/watchers.html#watcheffect
+ */
 watchEffect(() => {
+  /**
+   * If the current device is not a mobile device and the detail tab is 'Chapitres', set the detail tab to 'Description'.
+   */
   if (!isMobile.value && detailTab.value === 'Chapitres') {
     detailTab.value = 'Description'
   }
 })
 
+/**
+ * @var chapters The chapters of the formation.
+ */
 const chapters = computed(() => formation.chapters)
 
+/**
+ * @var completedChapters The number of completed chapters of the formation.
+ */
 const completedChapters = computed(() => {
   return formation.formation_user.completed_chapters.length
 })
 
+/**
+ * @var remainingTime The remaining time of the formation.
+ */
 const remainingTime = computed(() => {
   return Math.max(formation.duration - formation.formation_user.spent_time / 60, 0)
 })
 
 const downloadingCertificate = ref(false)
-const downloadCertificate = () => {
-  if (downloadingCertificate.value) return
 
+/**
+ * Start to download the certificate of the formation.
+ */
+const downloadCertificate = () => {
+  // Prevent multiple downloads
+  if (downloadingCertificate.value) return
   downloadingCertificate.value = true
+
+  // Start the download
   authenticatedAxios
     .get(`/api/certificates/${formation.id}`, {
       responseType: 'blob',
@@ -74,6 +110,7 @@ const downloadCertificate = () => {
       a.click()
     })
     .catch((error) => {
+      // Display an error notification if something went wrong
       console.error(error)
       notificationStore.addNotification(
         'Une erreur est survenue lors du téléchargement du certificat.',
@@ -81,6 +118,7 @@ const downloadCertificate = () => {
       )
     })
     .finally(() => {
+      // Allow new downloads
       downloadingCertificate.value = false
     })
 }

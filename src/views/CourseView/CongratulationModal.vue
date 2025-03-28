@@ -1,9 +1,15 @@
 <script setup lang="ts">
 defineProps<{
+  /**
+   * The ID of the formation that the user has completed.
+   */
   formationId: number
 }>()
 
 const emit = defineEmits<{
+  /**
+   * Emitted when the modal should be closed.
+   */
   (e: 'close'): void
 }>()
 </script>
